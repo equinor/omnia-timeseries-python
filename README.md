@@ -36,7 +36,7 @@ credential = ClientSecretCredential(
 )
 ```
 
-### Getting latest datapoint for timeseries
+### Getting latest datapoint for timeseries within the Beta environment
 
 ```python
 from omnia_timeseries import TimeseriesAPI, TimeseriesEnvironment
@@ -47,6 +47,18 @@ api = TimeseriesAPI(
 data = api.get_latest_datapoint(id='91f945d3-be34-4f8c-a43f-e00a3a2d9cfc', beforeTime='2021-02-01T09:54:30Z')
 print(data['data'])
 
+```
+
+### Using a custom API environment
+
+```python
+api = TimeseriesAPI(
+    azure_credential=credential,
+    environment=TimeseriesEnvironment(
+        resource_id="<azure-resource-id>",
+        base_url="<base-url-for-api>"
+    )
+)
 ```
 
 #### Output
