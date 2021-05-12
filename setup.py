@@ -18,6 +18,8 @@ setuptools.setup(
     ],
     python_requires='>=3.8',
     install_requires=[
-        "azure-identity==1.5.0"
+        "azure-identity==1.5.0",
+        "pytest",
+        "requests_mock"
     ]
 )
