@@ -26,6 +26,8 @@ $ pip install -e .
 
 ### Preparing Azure authentication
 
+#### With service principal credentials
+
 ```python
 from azure.identity import ClientSecretCredential
 import os
@@ -35,6 +37,20 @@ credential = ClientSecretCredential(
     client_secret=os.environ['AZURE_CLIENT_SECRET']
 )
 ```
+
+#### With user impersonation
+
+```python
+from azure.identity import DeviceCodeCredential
+import os
+credential = DeviceCodeCredential(
+    tenant_id=os.environ['AZURE_TENANT_ID'],
+    client_id=os.environ['AZURE_CLIENT_ID']
+)
+```
+
+During authentication, this will display a URL to visit, and a code to enter. After completing
+the flow, execution will proceed.
 
 ### Getting latest datapoint for timeseries within the Beta environment
 
