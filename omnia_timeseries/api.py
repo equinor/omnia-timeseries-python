@@ -319,10 +319,10 @@ class TimeseriesAPI:
         )
 
     def set_stream_destination(self, connectionString:str) -> MessageModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/setStreanDestination"""
+        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/setStreamDestination"""
         return self._http_client.request(
             request_type='post',
-            url=f"{self._base_url}/streaming/subscriptions",
+            url=f"{self._base_url}/streaming/destination",
             payload={
                 'connectionString': connectionString
             }
