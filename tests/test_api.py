@@ -33,7 +33,7 @@ def test_retry_on_failure(api):
     assert m.call_count == 3, "Unexpected number of retries"
 
 
-def test_skip_retry_when_not_retryable_Status_code(api):
+def test_skip_retry_when_not_retryable_status_code(api):
     with requests_mock.Mocker() as m:
         m.register_uri("GET", "https://test/1234/data/latest", status_code=403,  # 403 is not retryable
                        text="""{"message": "Service is unavailable", "traceId": "1"}""")
