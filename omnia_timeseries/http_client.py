@@ -20,7 +20,7 @@ class TimeseriesRequestFailedException(Exception):
         self._message = error["message"]
         self._trace_id = error["traceId"]
         super().__init__(
-            f"Status code: {self._status_code}, Reason: {self._reason}, Message: {self._message},  Trace ID: {self._trace_id}")
+            f"Status code: {self._status_code}, Reason: {self._reason}, Message: {self._message}, Trace ID: {self._trace_id}")
 
     @property
     def status_code(self) -> int:
