@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="omnia-timeseries-api",
-    version="1.0.0",
+    version="1.0.1",
     author="Equinor Omnia Industrial IoT Team",
     description="Official Python SDK for the Omnia Timeseries API",
     long_description=long_description,
@@ -18,7 +18,7 @@ setuptools.setup(
     ],
     python_requires='>=3.8',
     install_requires=[
-        "azure-identity==1.5.0",
+        "azure-identity==1.6.0",
         "pytest",
         "requests_mock"
     ]
