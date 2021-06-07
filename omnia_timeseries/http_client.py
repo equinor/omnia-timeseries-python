@@ -9,6 +9,8 @@ import platform
 
 logger = logging.getLogger(__name__)
 version = metadata.version("omnia-timeseries-api")
+system_version_string = f'({platform.system()}; Python {platform.version()})' if platform.system(
+) else f'(Python {platform.version()})'
 
 
 @retry(logger=logger)
@@ -46,6 +48,6 @@ class HttpClient:
         headers = {
             'Authorization': f'Bearer {access_token.token}',
             'Content-Type': 'application/json',
-            'User-Agent': f'Omnia Timeseries SDK/{version} Python {platform.python_version()}'
+            'User-Agent': f'Omnia Timeseries SDK/{version} {system_version_string}'
         }
         return _request(request_type=request_type, url=url, headers=headers, payload=payload, params=params)
