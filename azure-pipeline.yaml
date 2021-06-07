@@ -3,6 +3,7 @@ trigger:
 - develop
 
 pr:
+- main
 - develop
 
 pool:
