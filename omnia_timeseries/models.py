@@ -176,7 +176,7 @@ class TimeseriesRequestFailedException(Exception):
         self._status_code = response.status_code
         self._reason = response.reason
         self._message = error["message"]
-        self._trace_id = error["traceId"]
+        self._trace_id = error["traceId"] if "traceId" in error else None
         super().__init__(
             f"Status code: {self._status_code}, Reason: {self._reason}, Message: {self._message},  Trace ID: {self._trace_id}")
 
