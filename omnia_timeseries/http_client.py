@@ -56,6 +56,7 @@ class HttpClient:
             f'{self._resource_id}/.default')  # handles caching and refreshing internally
         headers = {
             'Authorization': f'Bearer {access_token.token}',
+            'Content-Type': 'application/json',
             'Accept': accept,
             'User-Agent': f'Omnia Timeseries SDK/{version} {system_version_string}'
         }
