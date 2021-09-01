@@ -57,7 +57,6 @@ class HttpClient:
         headers = {
             'Authorization': f'Bearer {access_token.token}',
             'Content-Type': 'application/json',
-            'Accept': accept,
             'User-Agent': f'Omnia Timeseries SDK/{version} {system_version_string}'
         }
         return _request(request_type=request_type, url=url, headers=headers, payload=payload, params=params)
