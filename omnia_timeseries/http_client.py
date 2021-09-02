@@ -2,10 +2,16 @@ from typing import Literal, Optional, TypedDict, Union, Dict, Any
 from azure.identity._internal.msal_credentials import MsalCredential
 import requests
 import logging
+
 from omnia_timeseries.helpers import retry
 from omnia_timeseries.models import TimeseriesRequestFailedException
 from importlib import metadata
 import platform
+
+ContentType = Literal["application/json",
+                      "application/protobuf", "application/x-google-protobuf"]
+
+RequestType = Literal['get', 'put', 'post', 'patch', 'delete']
 
 logger = logging.getLogger(__name__)
 version = metadata.version("omnia-timeseries-api")
@@ -15,19 +21,21 @@ system_version_string = f'({platform.system()}; Python {platform.version()})' if
 
 @retry(logger=logger)
 def _request(
-    request_type,
-    url,
-    headers,
-    payload=None,
-    params=None
-) -> Dict[str, Any]:
+    request_type: RequestType,
+    url: str,
+    headers: Dict[str, Any],
+    payload: Optional[Union[TypedDict, dict, list]] = None,
+    params: Optional[Dict[str, Any]] = None
+) -> Union[Dict[str, Any], bytes]:
 
     response = requests.request(
         request_type, url, headers=headers, json=payload, params=params)
     if not response.ok:
         raise TimeseriesRequestFailedException(response)
-    json_obj = response.json()
-    return json_obj
+    if not "Accept" in headers or headers["Accept"] == "application/json":
+        return response.json()
+    else:
+        return response.content
 
 
 class HttpClient:
@@ -37,8 +45,9 @@ class HttpClient:
 
     def request(
         self,
-        request_type: Literal['get', 'put', 'post', 'patch', 'delete'],
+        request_type: RequestType,
         url: str,
+        accept: ContentType = "application/json",
         payload: Optional[Union[TypedDict, dict, list]] = None,
         params: Optional[Dict[str, Any]] = None
     ) -> Any:

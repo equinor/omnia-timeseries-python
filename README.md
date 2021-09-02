@@ -60,7 +60,7 @@ api = TimeseriesAPI(
     azure_credential=credential,
     environment=TimeseriesEnvironment.Beta()
 )
-data = api.get_latest_datapoint(id='91f945d3-be34-4f8c-a43f-e00a3a2d9cfc', beforeTime='2021-02-01T09:54:30Z')
+data = api.get_latest_datapoint(id='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', beforeTime='2021-02-01T09:54:30Z')
 print(data['data'])
 
 ```
@@ -80,7 +80,7 @@ api = TimeseriesAPI(
 #### Output
 
 ```
->> {'items': [{'id': '91f945d3-be34-4f8c-a43f-e00a3a2d9cfc', 'datapoints': [{'time': '2021-02-01T09:54:05.4200000Z', 'value': -0.000286102294921875, 'status': 192}]}]}
+>> {'items': [{'id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'datapoints': [{'time': '2021-02-01T09:54:05.4200000Z', 'value': -0.000286102294921875, 'status': 192}]}]}
 ```
 
 ### Other use cases
