@@ -60,8 +60,7 @@ api = TimeseriesAPI(
     azure_credential=credential,
     environment=TimeseriesEnvironment.Beta()
 )
-timeseries_id = ...
-data = api.get_latest_datapoint(id=timeseries_id, beforeTime='2021-02-01T09:54:30Z')
+data = api.get_latest_datapoint(id='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', beforeTime='2021-02-01T09:54:30Z')
 print(data['data'])
 
 ```
