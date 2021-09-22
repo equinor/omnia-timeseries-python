@@ -32,6 +32,7 @@ class GetDatapointsResponseModel(TypedDict):
     data: DatapointsItemsModel
     count: Optional[int]
     continuationToken: Optional[str]
+    federated: Optional[bool]
 
 
 class GetMultipleDatapointsRequestItem(TypedDict, total=False):
