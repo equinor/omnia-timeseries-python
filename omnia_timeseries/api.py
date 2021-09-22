@@ -21,17 +21,17 @@ class TimeseriesEnvironment:
         self._base_url = base_url
 
     @classmethod
-    def Beta(cls):
+    def Beta(cls, version="1.7"):
         return cls(
             resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
-            base_url="https://api.gateway.equinor.com/plant-beta/timeseries/v1.6"
+            base_url=f"https://api.gateway.equinor.com/plant-beta/timeseries/v{version}"
         )
 
     @classmethod
-    def Prod(cls):
+    def Prod(cls, version="1.6"):
         return cls(
             resource_id="141369bd-3dca-4b55-825b-56ad4a69b1fc",
-            base_url="https://api.gateway.equinor.com/plant/timeseries/v1.6"
+            base_url=f"https://api.gateway.equinor.com/plant/timeseries/v{version}"
         )
 
     @property
@@ -87,6 +87,7 @@ class TimeseriesAPI:
             includeOutsidePoints: Optional[bool] = None,
             limit: Optional[int] = None,
             continuationToken: Optional[str] = None,
+            federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> GetDatapointsResponseModel:
         """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getDatapoints"""
         params = {}
@@ -102,6 +103,8 @@ class TimeseriesAPI:
             params['limit'] = limit
         if continuationToken is not None:
             params['continuationToken'] = continuationToken
+        if federationSource is not None:
+            params['federationSource'] = federationSource
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/{id}/data",
@@ -109,12 +112,23 @@ class TimeseriesAPI:
             params=params
         )
 
-    def get_multi_datapoints(self, request: List[GetMultipleDatapointsRequestItem], accept: ContentType = "application/json") -> GetAggregatesResponseModel:
+    def get_multi_datapoints(
+            self,
+            request: List[GetMultipleDatapointsRequestItem],
+            continuationToken: Optional[str] = None,
+            federationSource: Optional[str] = None,
+            accept: ContentType = "application/json") -> GetAggregatesResponseModel:
         """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getMultiDatapoints"""
+        params = {}
+        if continuationToken is not None:
+            params['continuationToken'] = continuationToken
+        if federationSource is not None:
+            params['federationSource'] = federationSource
         return self._http_client.request(
             request_type='post',
             url=f"{self._base_url}/query/data",
             accept=accept,
+            params=params,
             payload=request
         )
 
@@ -129,6 +143,7 @@ class TimeseriesAPI:
             fill: Optional[str] = None,
             limit: Optional[int] = None,
             continuationToken: Optional[str] = None,
+            federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> GetAggregatesResponseModel:
         """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/get-aggregates"""
         params = {}
@@ -148,6 +163,8 @@ class TimeseriesAPI:
             params['limit'] = limit
         if continuationToken is not None:
             params['continuationToken'] = continuationToken
+        if federationSource is not None:
+            params['federationSource'] = federationSource
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/{id}/data/aggregates",
@@ -161,6 +178,7 @@ class TimeseriesAPI:
             afterTime: Optional[str] = None,
             beforeTime: Optional[str] = None,
             status: Optional[List[int]] = None,
+            federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> DatapointModel:
         """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getFirstDatapoint"""
         params = {}
@@ -170,6 +188,8 @@ class TimeseriesAPI:
             params['beforeTime'] = beforeTime
         if status is not None:
             params['status'] = status
+        if federationSource is not None:
+            params['federationSource'] = federationSource
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/{id}/data/first",
@@ -183,6 +203,7 @@ class TimeseriesAPI:
             afterTime: Optional[str] = None,
             beforeTime: Optional[str] = None,
             status: Optional[List[int]] = None,
+            federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> GetDatapointsResponseModel:
         """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getLatestDatapoint"""
         params = {}
@@ -192,6 +213,8 @@ class TimeseriesAPI:
             params['beforeTime'] = beforeTime
         if status is not None:
             params['status'] = status
+        if federationSource is not None:
+            params['federationSource'] = federationSource
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/{id}/data/latest",
@@ -199,22 +222,36 @@ class TimeseriesAPI:
             params=params
         )
 
-    def get_first_multi_datapoint(self, request: List[GetMultipleDatapointsRequestItem], accept: ContentType = "application/json") -> GetDatapointsResponseModel:
+    def get_first_multi_datapoint(self,
+                                  request: List[GetMultipleDatapointsRequestItem],
+                                  federationSource: Optional[str] = None,
+                                  accept: ContentType = "application/json") -> GetDatapointsResponseModel:
         """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getFirstMultiDatapoint"""
+        params = {}
+        if federationSource is not None:
+            params['federationSource'] = federationSource
         return self._http_client.request(
-            request_type='get',
+            request_type='post',
             url=f"{self._base_url}/query/data/first",
             accept=accept,
-            payload=request
+            payload=request,
+            params=params
         )
 
-    def get_latest_multi_datapoint(self, request: List[GetMultipleDatapointsRequestItem], accept: ContentType = "application/json") -> GetDatapointsResponseModel:
+    def get_latest_multi_datapoint(self,
+                                   request: List[GetMultipleDatapointsRequestItem],
+                                   federationSource: Optional[str] = None,
+                                   accept: ContentType = "application/json") -> GetDatapointsResponseModel:
         """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getLastMultiDatapoint"""
+        params = {}
+        if federationSource is not None:
+            params['federationSource'] = federationSource
         return self._http_client.request(
-            request_type='get',
+            request_type='post',
             url=f"{self._base_url}/query/data/latest",
             accept=accept,
-            payload=request
+            payload=request,
+            params=params
         )
 
     def get_history(self, id: str) -> GetHistoryResponseModel:
