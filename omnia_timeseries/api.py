@@ -112,6 +112,46 @@ class TimeseriesAPI:
             params=params
         )
 
+    def get_datapoints_by_name(
+            self,
+            name: str,
+            facility: str,
+            terminal: Optional[str] = None,
+            startTime: Optional[str] = None,
+            endTime: Optional[str] = None,
+            status: Optional[List[int]] = None,
+            includeOutsidePoints: Optional[bool] = None,
+            limit: Optional[int] = None,
+            continuationToken: Optional[str] = None,
+            federationSource: Optional[str] = None,
+            accept: ContentType = "application/json") -> GetDatapointsResponseModel:
+        """https://api.equinor.com/docs/services/Timeseries-api-v1-7/operations/getDataByName"""
+        params = {}
+        params["name"] = name
+        params["facility"] = facility
+        if terminal is not None:
+            params["terminal"] = terminal
+        if startTime is not None:
+            params['startTime'] = startTime
+        if endTime is not None:
+            params['endTime'] = endTime
+        if status is not None:
+            params['status'] = status
+        if includeOutsidePoints is not None:
+            params['includeOutsidePoints'] = includeOutsidePoints
+        if limit is not None:
+            params['limit'] = limit
+        if continuationToken is not None:
+            params['continuationToken'] = continuationToken
+        if federationSource is not None:
+            params['federationSource'] = federationSource
+        return self._http_client.request(
+            request_type='get',
+            url=f"{self._base_url}/query/data",
+            accept=accept,
+            params=params
+        )
+
     def get_multi_datapoints(
             self,
             request: List[GetMultipleDatapointsRequestItem],
