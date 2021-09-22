@@ -12,6 +12,8 @@ from omnia_timeseries.models import (
 )
 import logging
 
+TimeseriesVersion = Literal["1.6", "1.7"]
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,14 +23,14 @@ class TimeseriesEnvironment:
         self._base_url = base_url
 
     @classmethod
-    def Beta(cls, version="1.7"):
+    def Beta(cls, version: TimeseriesVersion = "1.7"):
         return cls(
             resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
             base_url=f"https://api.gateway.equinor.com/plant-beta/timeseries/v{version}"
         )
 
     @classmethod
-    def Prod(cls, version="1.6"):
+    def Prod(cls, version: TimeseriesVersion = "1.6"):
         return cls(
             resource_id="141369bd-3dca-4b55-825b-56ad4a69b1fc",
             base_url=f"https://api.gateway.equinor.com/plant/timeseries/v{version}"
