@@ -30,7 +30,7 @@ class TimeseriesEnvironment:
         )
 
     @classmethod
-    def Prod(cls, version: TimeseriesVersion = "1.6"):
+    def Prod(cls, version: TimeseriesVersion = "1.7"):
         return cls(
             resource_id="141369bd-3dca-4b55-825b-56ad4a69b1fc",
             base_url=f"https://api.gateway.equinor.com/plant/timeseries/v{version}"
