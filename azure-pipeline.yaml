@@ -6,13 +6,6 @@ pr:
 - main
 - develop
 
-pool:
-  vmImage: 'ubuntu-latest'
-strategy:
-  matrix:
-    Python39:
-      python.version: '3.9'
-
 parameters:
   - name: 'severityThreshold'
     type: string
@@ -26,6 +19,8 @@ stages:
     jobs:
       - job: SnykAppScan
         displayName: Scan app for vulnerabilities
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
           - task: SnykSecurityScan@1
             displayName: 'Snyk app scan'
@@ -41,6 +36,13 @@ stages:
     displayName: Build SDK
     jobs:
       - job: PythonBuild
+        displayName: Build Python SDK
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          matrix:
+            Python39:
+              python.version: '3.9'
         steps:
         - task: UsePythonVersion@0
           inputs:
