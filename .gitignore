@@ -136,3 +136,5 @@ dmypy.json
 
 # Test notebook
 test.ipynb
+
+.dccache
