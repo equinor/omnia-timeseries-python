@@ -6,11 +6,6 @@ pr:
 - main
 - develop
 
-parameters:
-  - name: 'severityThreshold'
-    type: string
-    default: 'High'
-
 stages:
   - stage: Snyk
     displayName: Snyk Security Scan
@@ -32,7 +27,7 @@ stages:
               testType: 'app'
               monitorWhen: 'always'
               additionalArguments: '--file=./setup.py'
-              severityThreshold: '${{parameters.severityThreshold}}'
+              severityThreshold: 'High'
               failOnIssues: true
 
   - stage: Build
