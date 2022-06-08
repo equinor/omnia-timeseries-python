@@ -20,6 +20,7 @@ setup(
     install_requires=[
         "azure-identity==1.10.0",
         "pytest",
-        "requests_mock"
+        "requests_mock",
+        "cryptography>=3.2"
     ]
 )
