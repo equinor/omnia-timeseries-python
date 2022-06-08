@@ -10,8 +10,6 @@ parameters:
   - name: 'severityThreshold'
     type: string
     default: 'High'
-  - name: 'snykServiceConnection'
-    type: string
 
 stages:
   - stage: Snyk
@@ -25,7 +23,7 @@ stages:
           - task: SnykSecurityScan@1
             displayName: 'Snyk app scan'
             inputs:
-              serviceConnectionEndpoint: '{{parameters.snykServiceConnection}}'
+              serviceConnectionEndpoint: '$(snykServiceConnection)'
               testType: 'app'
               monitorWhen: 'always'
               additionalArguments: '--file=./setup.py'
