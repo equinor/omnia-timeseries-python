@@ -6,6 +6,7 @@ import logging
 from omnia_timeseries.helpers import retry
 from omnia_timeseries.models import TimeseriesRequestFailedException
 from importlib import metadata
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 import platform
 
 ContentType = Literal["application/json",
@@ -18,6 +19,7 @@ version = metadata.version("omnia-timeseries-api")
 system_version_string = f'({platform.system()}; Python {platform.version()})' if platform.system(
 ) else f'(Python {platform.version()})'
 
+RequestsInstrumentor().instrument()
 
 @retry(logger=logger)
 def _request(
