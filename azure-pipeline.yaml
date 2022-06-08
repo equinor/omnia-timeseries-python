@@ -13,18 +13,46 @@ strategy:
     Python39:
       python.version: '3.9'
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+parameters:
+  - name: 'severityThreshold'
+    type: string
+    default: 'High'
+  - name: 'snykServiceConnection'
+    type: string
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -e .
-  displayName: 'Install module and dependencies'
+stages:
+  - stage: Snyk
+    displayName: Snyk Security Scan
+    jobs:
+      - job: SnykAppScan
+        displayName: Scan app for vulnerabilities
+        steps:
+          - task: SnykSecurityScan@1
+            displayName: 'Snyk app scan'
+            inputs:
+              serviceConnectionEndpoint: '{{parameters.snykServiceConnection}}'
+              testType: 'app'
+              monitorWhen: 'always'
+              additionalArguments: '--file=./setup.py'
+              severityThreshold: '${{parameters.severityThreshold}}'
+              failOnIssues: true
 
-- script: |
-    python -m pytest
-  displayName: 'pytest'
+  - stage: Build
+    displayName: Build SDK
+    jobs:
+      - job: PythonBuild
+        steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(python.version)'
+          displayName: 'Use Python $(python.version)'
+
+        - script: |
+            python -m pip install --upgrade pip
+            pip install -e .
+          displayName: 'Install module and dependencies'
+
+        - script: |
+            python -m pytest
+          displayName: 'pytest'
   
