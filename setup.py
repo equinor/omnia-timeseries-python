@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="omnia-timeseries-api",
-    version="1.1.4",
+    version="1.1.5",
     author="Equinor Omnia Industrial IoT Team",
     description="Official Python SDK for the Omnia Timeseries API",
     long_description=long_description,
@@ -22,6 +22,6 @@ setup(
         "pytest",
         "requests_mock",
         "cryptography>=3.2",
-        "opentelemetry-instrumentation-requests>=0.32b0"
+        "opentelemetry-instrumentation-requests==0.31b0"
     ]
 )
