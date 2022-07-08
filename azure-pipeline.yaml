@@ -27,7 +27,7 @@ stages:
               testType: 'app'
               monitorWhen: 'always'
               additionalArguments: '--file=./setup.py'
-              severityThreshold: 'High'
+              severityThreshold: 'high'
               failOnIssues: true
 
   - stage: Build
@@ -55,4 +55,3 @@ stages:
         - script: |
             python -m pytest
           displayName: 'pytest'
-  
