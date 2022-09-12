@@ -22,6 +22,7 @@ setup(
         "pytest",
         "requests_mock",
         "cryptography>=3.2",
+        "pyjwt==2.4.0", 
         "opentelemetry-instrumentation-requests==0.31b0"
     ]
 )
