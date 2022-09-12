@@ -5,6 +5,7 @@ from omnia_timeseries.models import (
     DatapointModel,
     DatapointsItemsModel, DatapointsPostRequestModel,
     FacilityDataModel, GetAggregatesResponseModel, GetDatapointsResponseModel, GetHistoryResponseModel, GetMultipleDatapointsRequestItem, GetTimeseriesResponseModel,
+    SourceDataModel,
     MessageModel,
     StreamSubscriptionRequestModel,
     StreamSubscriptionDataModel,
@@ -457,15 +458,29 @@ class TimeseriesAPI:
         )
 
     def get_facilities(self) -> FacilityDataModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getFacility"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetFacets"""
         return self._http_client.request(
             request_type='get',
-            url=f"{self._base_url}/facility/counters"
+            url=f"{self._base_url}/facets/facility"
         )
 
-    def get_facility_by_name(self, name: str) -> FacilityDataModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getFacilityByName"""
+    def get_sources(self) ->  SourceDataModel:        
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetFacets"""
         return self._http_client.request(
             request_type='get',
-            url=f"{self._base_url}/facility/{name}/counters"
+            url=f"{self._base_url}/facets/source"
+        )
+        
+    def get_sources_by_facility(self, facility: str) ->  SourceDataModel:
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetFacets"""
+        return self._http_client.request(
+            request_type='get',
+            url=f"{self._base_url}/facets/source?facility={facility}"
+        )
+
+    def get_facilities_by_source(self, source: str) -> FacilityDataModel:
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetFacets"""
+        return self._http_client.request(
+            request_type='get',
+            url=f"{self._base_url}/facets/facility?source={source}"
         )
