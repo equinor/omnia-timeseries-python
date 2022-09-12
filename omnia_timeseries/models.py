@@ -140,6 +140,21 @@ class FacilityDataModel(TypedDict):
     data: FacilityItemsModel
 
 
+class SourceModel(TypedDict):
+    source: str
+    tsdbExportEnabled: float
+    dlExportEnabled: float
+    totalImsSubscriptions: float
+
+
+class SourceItemsModel(TypedDict):
+    items: List[SourceModel]
+
+
+class SourceDataModel(TypedDict):
+    data: SourceItemsModel
+
+
 class HistoryItem(TypedDict):
     changedBy: str
     changedTime: str
