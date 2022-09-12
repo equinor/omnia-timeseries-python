@@ -457,15 +457,29 @@ class TimeseriesAPI:
         )
 
     def get_facilities(self) -> FacilityDataModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getFacility"""
+        """https://api.gateway.equinor.com/docs/plant/timeseries/v1.7/facets/facility"""
         return self._http_client.request(
             request_type='get',
-            url=f"{self._base_url}/facility/counters"
+            url=f"{self._base_url}/facets/facility"
         )
 
-    def get_facility_by_name(self, name: str) -> FacilityDataModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getFacilityByName"""
+    def get_sources(self) ->  FacilityDataModel:        
+        """https://api.gateway.equinor.com/docs/plant/timeseries/v1.7/facets/source"""
         return self._http_client.request(
             request_type='get',
-            url=f"{self._base_url}/facility/{name}/counters"
+            url=f"{self._base_url}/facets/source"
+        )
+        
+    def get_sources_by_facility(self, facility: str) ->  FacilityDataModel:
+        """https://api.gateway.equinor.com/docs/plant/timeseries/v1.7/facets/source"""
+        return self._http_client.request(
+            request_type='get',
+            url=f"{self._base_url}/facets/source?facility={facility}"
+        )
+
+    def get_facilities_by_source(self, source: str) -> FacilityDataModel:
+        """https://api.gateway.equinor.com/docs/plant/timeseries/v1.7/facets/facility"""
+        return self._http_client.request(
+            request_type='get',
+            url=f"{self._base_url}/facets/facility?source={source}"
         )
