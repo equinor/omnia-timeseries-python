@@ -5,6 +5,7 @@ from omnia_timeseries.models import (
     DatapointModel,
     DatapointsItemsModel, DatapointsPostRequestModel,
     FacilityDataModel, GetAggregatesResponseModel, GetDatapointsResponseModel, GetHistoryResponseModel, GetMultipleDatapointsRequestItem, GetTimeseriesResponseModel,
+    SourceDataModel,
     MessageModel,
     StreamSubscriptionRequestModel,
     StreamSubscriptionDataModel,
@@ -463,14 +464,14 @@ class TimeseriesAPI:
             url=f"{self._base_url}/facets/facility"
         )
 
-    def get_sources(self) ->  FacilityDataModel:        
+    def get_sources(self) ->  SourceDataModel:        
         """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetFacets"""
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/facets/source"
         )
         
-    def get_sources_by_facility(self, facility: str) ->  FacilityDataModel:
+    def get_sources_by_facility(self, facility: str) ->  SourceDataModel:
         """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetFacets"""
         return self._http_client.request(
             request_type='get',
