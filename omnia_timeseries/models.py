@@ -127,7 +127,7 @@ class TimeseriesPatchRequestItem(TypedDict, total=False):
 
 class FacilityModel(TypedDict):
     facility: str
-    count: float
+    count: int
 
 
 class FacilityItemsModel(TypedDict):
@@ -140,7 +140,7 @@ class FacilityDataModel(TypedDict):
 
 class SourceModel(TypedDict):
     source: str
-    count: float
+    count: int
 
 
 class SourceItemsModel(TypedDict):
