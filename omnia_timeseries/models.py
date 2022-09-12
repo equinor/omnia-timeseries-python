@@ -127,9 +127,7 @@ class TimeseriesPatchRequestItem(TypedDict, total=False):
 
 class FacilityModel(TypedDict):
     facility: str
-    tsdbExportEnabled: float
-    dlExportEnabled: float
-    totalImsSubscriptions: float
+    count: int
 
 
 class FacilityItemsModel(TypedDict):
@@ -138,6 +136,19 @@ class FacilityItemsModel(TypedDict):
 
 class FacilityDataModel(TypedDict):
     data: FacilityItemsModel
+
+
+class SourceModel(TypedDict):
+    source: str
+    count: int
+
+
+class SourceItemsModel(TypedDict):
+    items: List[SourceModel]
+
+
+class SourceDataModel(TypedDict):
+    data: SourceItemsModel
 
 
 class HistoryItem(TypedDict):
