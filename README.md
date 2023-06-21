@@ -26,6 +26,8 @@ $ pip install -e .
 
 ### Preparing Azure authentication
 
+See https://github.com/equinor/OmniaPlant/wiki/Authentication-&-Authorization for general information about Timeseries API authentication and authorization.
+
 #### With service principal credentials
 
 ```python
@@ -39,6 +41,11 @@ credential = ClientSecretCredential(
 ```
 
 #### With user impersonation
+
+For testing user impersonation you can use our public client ids:
+
+- 67da184b-6bde-43fd-a155-30ed4ff162d2 (test)
+- 141369bd-3dca-4b55-825b-56ad4a69b1fc (production)
 
 ```python
 from azure.identity import DeviceCodeCredential
