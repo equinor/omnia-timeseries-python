@@ -59,13 +59,23 @@ credential = DeviceCodeCredential(
 During authentication, this will display a URL to visit, and a code to enter. After completing
 the flow, execution will proceed.
 
-### Getting latest datapoint for timeseries within the Beta environment
+#### With default credentials (azure cli, MSI and so on)
+
+```python
+from omnia_timeseries import TimeseriesEnvironment, TimeseriesAPI
+from azure.identity import DefaultAzureCredential
+cred = DefaultAzureCredential()
+api = TimeseriesAPI(cred, TimeseriesEnvironment.Prod())
+api.get_timeseries(limit=1)
+```
+
+### Getting latest datapoint for timeseries within the Test environment
 
 ```python
 from omnia_timeseries import TimeseriesAPI, TimeseriesEnvironment
 api = TimeseriesAPI(
     azure_credential=credential,
-    environment=TimeseriesEnvironment.Beta()
+    environment=TimeseriesEnvironment.Test()
 )
 data = api.get_latest_datapoint(id='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', beforeTime='2021-02-01T09:54:30Z')
 print(data['data'])
