@@ -24,10 +24,17 @@ class TimeseriesEnvironment:
         self._base_url = base_url
 
     @classmethod
+    def Test(cls, version: TimeseriesVersion = "1.7"):
+        return cls(
+            resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
+            base_url=f"https://api-test.gateway.equinor.com/plant/timeseries/v{version}"
+        )
+
+    @classmethod
     def Beta(cls, version: TimeseriesVersion = "1.7"):
         return cls(
             resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
-            base_url=f"https://api.gateway.equinor.com/plant-beta/timeseries/v{version}"
+            base_url=f"https://api-test.gateway.equinor.com/plant/timeseries/v{version}"
         )
 
     @classmethod
@@ -63,21 +70,21 @@ class TimeseriesAPI:
             azure_credential=azure_credential, resource_id=environment.resource_id)
         self._base_url = environment.base_url.rstrip('/')
 
-    def write_data(self, id: str, data: DatapointsPostRequestModel, is_async: Optional[bool] = None) -> MessageModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/writeData"""
+    def write_data(self, id: str, data: DatapointsPostRequestModel, write_async: Optional[bool] = None) -> MessageModel:
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=writeData"""
         return self._http_client.request(
             request_type='post',
             url=f"{self._base_url}/{id}/data",
-            params={'async': is_async} if is_async is not None else None,
+            params={'async': write_async} if write_async is not None else None,
             payload=data
         )
 
-    def write_multiple(self, items: DatapointsItemsModel, is_async: Optional[bool] = None) -> MessageModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/writeMultipleData"""
+    def write_multiple(self, items: DatapointsItemsModel, write_async: Optional[bool] = None) -> MessageModel:
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=writeMultipleData"""
         return self._http_client.request(
             request_type='post',
             url=f"{self._base_url}/data",
-            params={'async': is_async} if is_async is not None else None,
+            params={'async': write_async} if write_async is not None else None,
             payload=items
         )
 
@@ -92,7 +99,7 @@ class TimeseriesAPI:
             continuationToken: Optional[str] = None,
             federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> GetDatapointsResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getDatapoints"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetData"""
         params = {}
         if startTime is not None:
             params['startTime'] = startTime
@@ -161,7 +168,7 @@ class TimeseriesAPI:
             continuationToken: Optional[str] = None,
             federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> GetAggregatesResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getMultiDatapoints"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetMultipleData"""
         params = {}
         if continuationToken is not None:
             params['continuationToken'] = continuationToken
@@ -188,7 +195,7 @@ class TimeseriesAPI:
             continuationToken: Optional[str] = None,
             federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> GetAggregatesResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/get-aggregates"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetAggregatedData"""
         params = {}
         if aggregateFunction is not None:
             params['aggregateFunction'] = aggregateFunction
@@ -223,7 +230,7 @@ class TimeseriesAPI:
             status: Optional[List[int]] = None,
             federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> DatapointModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getFirstDatapoint"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetFirst"""
         params = {}
         if afterTime is not None:
             params['afterTime'] = afterTime
@@ -248,7 +255,7 @@ class TimeseriesAPI:
             status: Optional[List[int]] = None,
             federationSource: Optional[str] = None,
             accept: ContentType = "application/json") -> GetDatapointsResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getLatestDatapoint"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetLatest"""
         params = {}
         if afterTime is not None:
             params['afterTime'] = afterTime
@@ -269,7 +276,7 @@ class TimeseriesAPI:
                                   request: List[GetMultipleDatapointsRequestItem],
                                   federationSource: Optional[str] = None,
                                   accept: ContentType = "application/json") -> GetDatapointsResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getFirstMultiDatapoint"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetMultipleFirst"""
         params = {}
         if federationSource is not None:
             params['federationSource'] = federationSource
@@ -285,7 +292,7 @@ class TimeseriesAPI:
                                    request: List[GetMultipleDatapointsRequestItem],
                                    federationSource: Optional[str] = None,
                                    accept: ContentType = "application/json") -> GetDatapointsResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getLastMultiDatapoint"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetMultipleLatest"""
         params = {}
         if federationSource is not None:
             params['federationSource'] = federationSource
@@ -298,7 +305,7 @@ class TimeseriesAPI:
         )
 
     def get_history(self, id: str) -> GetHistoryResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getHistory"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=getHistory"""
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/{id}/history",
@@ -312,12 +319,13 @@ class TimeseriesAPI:
             assetId: Optional[str] = None,
             facility: Optional[str] = None,
             limit: Optional[int] = None,
-            continuationToken: Optional[str] = None) -> GetTimeseriesResponseModel:
+            continuationToken: Optional[str] = None,
+            **kwargs) -> GetTimeseriesResponseModel:
         """
-        https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getTimeseries
+        https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=getTimeseries
         Note that maximum result set is 100.000 items.
         """
-        params = {}
+        params = kwargs or {}
         if name is not None:
             params['name'] = name
         if externalId is not None:
@@ -342,17 +350,30 @@ class TimeseriesAPI:
             self,
             query: Optional[str] = None,
             name: Optional[str] = None,
+            externalId: Optional[str] = None,
+            source: Optional[str] = None,
+            assetId: Optional[str] = None,
+            facility: Optional[str] = None,
             description: Optional[str] = None,
             unit: Optional[str] = None,
-            continuationToken: Optional[str] = None) -> GetTimeseriesResponseModel:
+            continuationToken: Optional[str] = None,
+            **kwargs) -> GetTimeseriesResponseModel:
         """
-        Without query: https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getSearchWitoutQuery
-        With query: https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getSearch
+        Without query: https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetSearch
+        With query: https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetSearchByQuery
         Note that maximum result set is 100.000 items.
         """
-        params = {}
+        params = kwargs or {}
         if name is not None:
             params['name'] = name
+        if externalId is not None:
+            params['externalId'] = externalId
+        if source is not None:
+            params['source'] = source
+        if assetId is not None:
+            params['assetId'] = assetId
+        if facility is not None:
+            params['facility'] = facility
         if description is not None:
             params['description'] = description
         if unit is not None:
@@ -367,14 +388,14 @@ class TimeseriesAPI:
         )
 
     def get_timeseries_by_id(self, id: str) -> GetTimeseriesResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getTimeseriesById"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=getTimeseriesById"""
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/{id}"
         )
 
     def post_timeseries(self, request: TimeseriesRequestItem) -> GetTimeseriesResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/postTimeseries"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=postTimeseries"""
         return self._http_client.request(
             request_type='post',
             url=f"{self._base_url}",
@@ -382,7 +403,7 @@ class TimeseriesAPI:
         )
 
     def get_or_add_timeseries(self, request: List[TimeseriesRequestItem]) -> GetTimeseriesResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/postGetOrAddTimeseries"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetOrAddTimeseries"""
         return self._http_client.request(
             request_type='post',
             url=f"{self._base_url}/getoradd",
@@ -390,7 +411,7 @@ class TimeseriesAPI:
         )
 
     def patch_timeseries(self, id: str, request: TimeseriesPatchRequestItem) -> GetTimeseriesResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/patchTimeseries"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=patchTimeseries"""
         return self._http_client.request(
             request_type='patch',
             url=f"{self._base_url}/{id}",
@@ -398,7 +419,7 @@ class TimeseriesAPI:
         )
 
     def put_timeseries(self, id: str, request: TimeseriesRequestItem) -> GetTimeseriesResponseModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/patchTimeseries"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=puttimeseries"""
         return self._http_client.request(
             request_type='put',
             url=f"{self._base_url}/{id}",
@@ -406,7 +427,7 @@ class TimeseriesAPI:
         )
 
     def create_stream_subscription(self, subscriptions: List[StreamSubscriptionRequestModel]) -> MessageModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/createStreamSubscription"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=CreateSubscriptions"""
         return self._http_client.request(
             request_type='post',
             url=f"{self._base_url}/streaming/subscriptions",
@@ -414,21 +435,21 @@ class TimeseriesAPI:
         )
 
     def delete_stream_subscription(self, id: str) -> MessageModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/DeleteStreamSubscription"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=DeleteSubscriptions"""
         return self._http_client.request(
             request_type='delete',
             url=f"{self._base_url}/streaming/subscriptions/{id}"
         )
 
     def get_streaming_subscriptions(self) -> StreamSubscriptionDataModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/getStreamSubscriptions"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=getStreamSubscriptions"""
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/streaming/subscriptions"
         )
 
     def set_stream_destination(self, connectionString: str) -> MessageModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/setStreamDestination"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=SetRealTimeDestination"""
         return self._http_client.request(
             request_type='post',
             url=f"{self._base_url}/streaming/destination",
@@ -438,14 +459,14 @@ class TimeseriesAPI:
         )
 
     def delete_timeseries_by_id(self, id: str) -> MessageModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/deleteTimeseriesById"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=DeleteTimeseries"""
         return self._http_client.request(
             request_type='delete',
             url=f"{self._base_url}/{id}"
         )
 
     def delete_data(self, id: str, startTime: Optional[str] = None, endTime: Optional[str] = None) -> MessageModel:
-        """https://api.equinor.com/docs/services/Timeseries-api-v1-6/operations/deleteData"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=deleteData"""
         params = {}
         if startTime is not None:
             params['startTime'] = startTime
