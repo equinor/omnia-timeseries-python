@@ -43,8 +43,8 @@ class GetMultipleDatapointsRequestItem(TypedDict, total=False):
     statusFilter: Optional[List[int]]
     includeOutsidePoints: Optional[bool]
     fill: Optional[str]
-    aggregateFunctions: Optional[List[Literal['avg', 'min',
-                                              'max', 'sum', 'stddev', 'count', 'first', 'last']]]
+    aggregateFunctions: Optional[List[Literal[
+        'avg', 'min', 'max', 'sum', 'stddev', 'count', 'first', 'last']]]
     processingInterval: Optional[str]
     continuationToken: Optional[str]
 
