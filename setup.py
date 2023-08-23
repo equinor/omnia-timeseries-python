@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="omnia-timeseries-api",
-    version="1.1.6",
+    version="1.2.0",
 
     author="Equinor Omnia Industrial IoT Team",
     description="Official Python SDK for the Omnia Timeseries API",
