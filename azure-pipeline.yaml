@@ -1,57 +1,57 @@
-trigger:
-- main
-- develop
+# trigger:
+# - main
+# - develop
 
-pr:
-- main
-- develop
+# pr:
+# - main
+# - develop
 
-stages:
-  - stage: Snyk
-    displayName: Snyk Security Scan
-    jobs:
-      - job: SnykAppScan
-        displayName: Scan app for vulnerabilities
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - script: |
-              python -m pip install --upgrade pip
-              pip install -e .
-            displayName: 'Install module and dependencies'
+# stages:
+#   - stage: Snyk
+#     displayName: Snyk Security Scan
+#     jobs:
+#       - job: SnykAppScan
+#         displayName: Scan app for vulnerabilities
+#         pool:
+#           vmImage: 'ubuntu-latest'
+#         steps:
+#           - script: |
+#               python -m pip install --upgrade pip
+#               pip install -e .
+#             displayName: 'Install module and dependencies'
 
-          - task: SnykSecurityScan@1
-            displayName: 'Snyk app scan'
-            inputs:
-              serviceConnectionEndpoint: '$(snykServiceConnection)'
-              testType: 'app'
-              monitorWhen: 'always'
-              additionalArguments: '--file=./setup.py'
-              severityThreshold: 'high'
-              failOnIssues: true
+#           - task: SnykSecurityScan@1
+#             displayName: 'Snyk app scan'
+#             inputs:
+#               serviceConnectionEndpoint: '$(snykServiceConnection)'
+#               testType: 'app'
+#               monitorWhen: 'always'
+#               additionalArguments: '--file=./setup.py'
+#               severityThreshold: 'high'
+#               failOnIssues: true
 
-  - stage: Build
-    displayName: Build SDK
-    jobs:
-      - job: PythonBuild
-        displayName: Build Python SDK
-        pool:
-          vmImage: 'ubuntu-latest'
-        strategy:
-          matrix:
-            Python39:
-              python.version: '3.9'
-        steps:
-        - task: UsePythonVersion@0
-          inputs:
-            versionSpec: '$(python.version)'
-          displayName: 'Use Python $(python.version)'
+#   - stage: Build
+    # displayName: Build SDK
+#     jobs:
+#       - job: PythonBuild
+#         displayName: Build Python SDK
+#         pool:
+#           vmImage: 'ubuntu-latest'
+#         strategy:
+#           matrix:
+#             Python39:
+#               python.version: '3.9'
+#         steps:
+#         - task: UsePythonVersion@0
+#           inputs:
+#             versionSpec: '$(python.version)'
+#           displayName: 'Use Python $(python.version)'
 
-        - script: |
-            python -m pip install --upgrade pip
-            pip install -e .
-          displayName: 'Install module and dependencies'
+#         - script: |
+#             python -m pip install --upgrade pip
+#             pip install -e .
+#           displayName: 'Install module and dependencies'
 
-        - script: |
-            python -m pytest
-          displayName: 'pytest'
+#         - script: |
+#             python -m pytest
+#           displayName: 'pytest'

@@ -1,0 +1,126 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'feature/**'
+    tags:
+      - v**
+
+permissions:
+  id-token: write
+  contents: write
+  checks: write
+  issues: read
+  packages: read
+  pull-requests: write
+
+jobs:
+  detectenv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detecting environment
+        id: get_env
+        run: |
+          echo "Running on ${{ github.ref }}"
+          echo "env_isFeature=false" >> $GITHUB_OUTPUT
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "env_name=production" >> $GITHUB_OUTPUT
+            echo "env_suffix=p" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "env_name=production" >> $GITHUB_OUTPUT
+            echo "env_suffix=p" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "env_name=development" >> $GITHUB_OUTPUT
+            echo "env_suffix=d" >> $GITHUB_OUTPUT
+          else
+            echo "env_name=development" >> $GITHUB_OUTPUT
+            echo "env_suffix=d" >> $GITHUB_OUTPUT
+            echo "env_isFeature=true" >> $GITHUB_OUTPUT
+          fi
+    outputs:
+      env_name: ${{ steps.get_env.outputs.env_name }}
+      env_suffix: ${{ steps.get_env.outputs.env_suffix }}
+      env_isFeature: ${{ steps.get_env.outputs.env_isFeature }}
+
+  snyk:
+    needs: [detectenv]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.detectenv.outputs.env_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: snyk/actions/setup@master
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
+          cache: 'pip'
+
+      - name: Pip install
+        run: |
+          pip install --upgrade pip
+          pip install -e .
+          poetry install
+
+      - name: Run snyk tests
+        run: |
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --all-projects --severity-threshold=high
+          snyk code test --all-projects --severity-threshold=high
+          if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
+            snyk monitor --all-projects --severity-threshold=high --project-tags=application=TIMESERIESSDK
+          fi
+
+  run-tests:
+    name: Run tests
+    needs: [detectenv, snyk]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.detectenv.outputs.env_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: 'pyproject.toml'
+          cache: 'pip'
+
+      - name: Run tests
+        run: |
+          pip install --upgrade pip
+          pip install -e .
+          python -m pytest
+
+  build:
+    needs: [detectenv, run-tests]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_type, 'tag')
+    environment:
+      name: ${{ needs.detectenv.outputs.env_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: 'pyproject.toml'
+          cache: 'pip'
+
+      - name: Build SDK
+        run: |
+          pip install --upgrade pip
+          pip install -e .
+          python -m build
+
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./dist/*
+          generateReleaseNotes: true
+          allowUpdates: true
