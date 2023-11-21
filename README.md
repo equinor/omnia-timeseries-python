@@ -102,4 +102,4 @@ api = TimeseriesAPI(
 
 ### Other use cases
 
-Please consult the [API Reference](https://api.equinor.com/docs/services/Timeseries-api-v1-6) for a full overview of the API endpoints.
+Please consult the [API Reference](https://api.equinor.com/docs/services/Timeseries-api-v1-7) for a full overview of the API endpoints.
