@@ -3,8 +3,8 @@ from azure.identity._internal.msal_credentials import MsalCredential
 import requests
 import logging
 
-from omnia_timeseries.helpers import retry
-from omnia_timeseries.models import TimeseriesRequestFailedException
+from omnia_timeseries_api.helpers import retry
+from omnia_timeseries_api.models import TimeseriesRequestFailedException
 from importlib import metadata
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 import platform

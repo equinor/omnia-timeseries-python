@@ -62,7 +62,7 @@ the flow, execution will proceed.
 #### With default credentials (azure cli, MSI and so on)
 
 ```python
-from omnia_timeseries import TimeseriesEnvironment, TimeseriesAPI
+from omnia_timeseries_api import TimeseriesEnvironment, TimeseriesAPI
 from azure.identity import DefaultAzureCredential
 cred = DefaultAzureCredential()
 api = TimeseriesAPI(cred, TimeseriesEnvironment.Prod())
@@ -72,7 +72,7 @@ api.get_timeseries(limit=1)
 ### Getting latest datapoint for timeseries within the Test environment
 
 ```python
-from omnia_timeseries import TimeseriesAPI, TimeseriesEnvironment
+from omnia_timeseries_api import TimeseriesAPI, TimeseriesEnvironment
 api = TimeseriesAPI(
     azure_credential=credential,
     environment=TimeseriesEnvironment.Test()
@@ -102,4 +102,4 @@ api = TimeseriesAPI(
 
 ### Other use cases
 
-Please consult the [API Reference](https://api.equinor.com/docs/services/Timeseries-api-v1-6) for a full overview of the API endpoints.
+Please consult the [API Reference](https://api.equinor.com/docs/services/Timeseries-api-v1-7) for a full overview of the API endpoints.

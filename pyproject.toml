@@ -1,0 +1,24 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "omnia_timeseries_api"
+version = "1.0.0"
+authors = ["Equinor Omnia Industrial IoT Team <omniaindiot@equinor.com>"]
+
+description = "Official Python SDK for the Omnia Timeseries API"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "*"
+azure-identity = "^1.10.0"
+requests-mock = "*"
+pytest = "*"
+azure-core = "*"
+poetry = "*"
+build = "*"
+opentelemetry-instrumentation-requests = "^0.41b0"
+cryptography = "^41.0.1"
+pyjwt = "^2.4.0"
