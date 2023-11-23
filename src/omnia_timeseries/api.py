@@ -1,7 +1,7 @@
 from typing import List, Literal, Optional
 from azure.identity._internal.msal_credentials import MsalCredential
-from omnia_timeseries_api.http_client import HttpClient, ContentType, RequestType
-from omnia_timeseries_api.models import (
+from omnia_timeseries.http_client import HttpClient, ContentType, RequestType
+from omnia_timeseries.models import (
     DatapointModel,
     DatapointsItemsModel, DatapointsPostRequestModel,
     FacilityDataModel, GetAggregatesResponseModel, GetDatapointsResponseModel, GetHistoryResponseModel, GetMultipleDatapointsRequestItem, GetTimeseriesResponseModel,
