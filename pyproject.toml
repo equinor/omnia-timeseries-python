@@ -3,7 +3,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "omnia_timeseries_api"
+name = "omnia_timeseries"
 version = "1.0.0"
 authors = ["Equinor Omnia Industrial IoT Team <omniaindiot@equinor.com>"]
 

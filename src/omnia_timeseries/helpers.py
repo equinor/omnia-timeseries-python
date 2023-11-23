@@ -1,7 +1,7 @@
 from functools import wraps
 from logging import debug
 import time
-from omnia_timeseries_api.models import TimeseriesRequestFailedException
+from omnia_timeseries.models import TimeseriesRequestFailedException
 
 # Reasonable status codes to retry, based on descriptions at https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 retry_status_codes = [408, 409, 425, 429, 502, 503, 504]
