@@ -4,7 +4,7 @@ import time
 from omnia_timeseries.models import TimeseriesRequestFailedException
 
 # Reasonable status codes to retry, based on descriptions at https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-retry_status_codes = [408, 409, 425, 429, 500, 502, 503, 504]
+retry_status_codes = [408, 409, 425, 429, 502, 503, 504]
 
 
 def retry(total_tries=3, initial_wait=0.5, backoff_factor=2, logger=None):

@@ -15,7 +15,7 @@ ContentType = Literal["application/json",
 RequestType = Literal['get', 'put', 'post', 'patch', 'delete']
 
 logger = logging.getLogger(__name__)
-version = metadata.version("omnia-timeseries-api")
+version = metadata.version("omnia_timeseries")
 system_version_string = f'({platform.system()}; Python {platform.version()})' if platform.system(
 ) else f'(Python {platform.version()})'
 
