@@ -59,13 +59,17 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
-          cache: 'pip'
+          #cache: 'pip'
+          cache: 'poetry'
 
-      - name: Pip install
+      #- name: Pip install
+      #  run: |
+      #    pip install --upgrade pip
+      #    pip install -e .
+      #    poetry install
+      - name: Install Poetry
         run: |
-          pip install --upgrade pip
-          pip install -e .
-          poetry install
+          pipx install poetry
 
       - name: Run snyk tests
         run: |
@@ -89,13 +93,16 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version-file: 'pyproject.toml'
-          cache: 'pip'
+          #cache: 'pip'
+          cache: 'poetry'
 
       - name: Run tests
         run: |
-          pip install --upgrade pip
-          pip install -e .
-          python -m pytest
+          poetry run pytest
+        #  pip install --upgrade pip
+        #  pip install -e .
+        #  python -m pytest
+        
 
   build:
     needs: [detectenv, run-tests]
@@ -110,13 +117,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version-file: 'pyproject.toml'
-          cache: 'pip'
+          #cache: 'pip'
+          cache: 'poetry'
 
       - name: Build SDK
         run: |
-          pip install --upgrade pip
-          pip install -e .
-          python -m build
+          poetry build
+        #  pip install --upgrade pip
+        #  pip install -e .
+        #  python -m build
 
       - name: Release
         uses: ncipollo/release-action@v1
