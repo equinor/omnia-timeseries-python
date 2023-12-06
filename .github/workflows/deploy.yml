@@ -55,6 +55,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: snyk/actions/setup@master
 
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+
       - name: Setup python
         uses: actions/setup-python@v4
         with:
@@ -67,9 +71,7 @@ jobs:
       #    pip install --upgrade pip
       #    pip install -e .
       #    poetry install
-      - name: Install Poetry
-        run: |
-          pipx install poetry
+      
 
       - name: Run snyk tests
         run: |
