@@ -66,14 +66,14 @@ jobs:
           python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
           cache: 'pip'
       
-      - name: Install Poetry
-        run: |
-          pipx install poetry
-      #- name: Pip install
+      #- name: Install Poetry
       #  run: |
-      #    pip install --upgrade pip
-      #    pip install -e .
-      #    poetry install
+      #    pipx install poetry
+      - name: Pip install
+        run: |
+          pip install --upgrade pip
+          pip install -e .
+          poetry install
       
 
       - name: Run snyk tests
