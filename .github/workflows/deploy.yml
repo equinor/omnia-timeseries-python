@@ -74,6 +74,7 @@ jobs:
           pip install --upgrade pip
           pip install -e .
           poetry install
+        # poetry update
       
 
       - name: Run snyk tests
