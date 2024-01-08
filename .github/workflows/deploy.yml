@@ -60,7 +60,7 @@ jobs:
         with:
           python-version-file: 'pyproject.toml'
           cache: 'pip'
-      
+
       - name: Pip install
         run: |
           pip install --upgrade pip
