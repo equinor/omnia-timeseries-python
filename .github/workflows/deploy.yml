@@ -48,9 +48,6 @@ jobs:
 
   snyk:
     needs: [detectenv]
-    #strategy:
-    #  matrix:
-    #    python-version: ['3.8', '3.9', '3.10', '3.11']
     runs-on: ubuntu-latest
     environment:
       name: ${{ needs.detectenv.outputs.env_name }}
@@ -61,23 +58,14 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          #cache: 'poetry'
-          #python-version: ${{matrix.python-version}}
-          python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
+          python-version-file: 'pyproject.toml'
           cache: 'pip'
       
-      #- name: Install Poetry
-      #  run: |
-      #    pipx install poetry
       - name: Pip install
         run: |
           pip install --upgrade pip
           pip install -e .
-          pip install pipx
-          pipx install poetry
           poetry install
-        # poetry update
-      
 
       - name: Run snyk tests
         run: |
@@ -91,9 +79,6 @@ jobs:
   run-tests:
     name: Run tests
     needs: [detectenv, snyk]
-    #strategy:
-    #  matrix:
-    #    python-version: ['3.8', '3.9', '3.10', '3.11']
     runs-on: ubuntu-latest
     environment:
       name: ${{ needs.detectenv.outputs.env_name }}
@@ -105,22 +90,15 @@ jobs:
         with:
           python-version-file: 'pyproject.toml'
           cache: 'pip'
-          #python-version: ${{matrix.python-version}}
-          #cache: 'poetry'
 
       - name: Run tests
         run: |
           pip install --upgrade pip
           pip install -e .
           python -m pytest
-        #  poetry run pytest  
-        
 
   build:
     needs: [detectenv, run-tests]
-    #strategy:
-    #  matrix:
-    #    python-version: ['3.8', '3.9', '3.10', '3.11']
     runs-on: ubuntu-latest
     if: startsWith(github.ref_type, 'tag')
     environment:
@@ -133,15 +111,12 @@ jobs:
         with:
           python-version-file: 'pyproject.toml'
           cache: 'pip'
-          #python-version: ${{matrix.python-version}}
-          #cache: 'poetry'
 
       - name: Build SDK
         run: |
           pip install --upgrade pip
           pip install -e .
           python -m build
-        #  poetry build
 
       - name: Release
         uses: ncipollo/release-action@v1
