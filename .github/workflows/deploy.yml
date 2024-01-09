@@ -58,7 +58,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
+          python-version-file: 'pyproject.toml'
           cache: 'pip'
 
       - name: Pip install
