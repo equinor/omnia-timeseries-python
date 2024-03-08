@@ -1,9 +1,7 @@
-import unittest
 import requests_mock
 import pytest
 from azure.identity._internal.msal_credentials import MsalCredential
 from azure.core.credentials import AccessToken
-from requests.models import Response
 from omnia_timeseries import TimeseriesAPI, TimeseriesEnvironment
 from omnia_timeseries.http_client import TimeseriesRequestFailedException
 

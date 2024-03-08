@@ -1,6 +1,6 @@
 from typing import List, Literal, Optional
 from azure.identity._internal.msal_credentials import MsalCredential
-from omnia_timeseries.http_client import HttpClient, ContentType, RequestType
+from omnia_timeseries.http_client import HttpClient, ContentType
 from omnia_timeseries.models import (
     DatapointModel,
     DatapointsItemsModel, DatapointsPostRequestModel,
@@ -65,9 +65,8 @@ class TimeseriesAPI:
         :type environment: TimeseriesEnvironment
     """
 
-    def __init__(self, azure_credential: MsalCredential, environment: TimeseriesEnvironment):
-        self._http_client = HttpClient(
-            azure_credential=azure_credential, resource_id=environment.resource_id)
+    def __init__(self, azure_credential: MsalCredential = None, environment: TimeseriesEnvironment = TimeseriesEnvironment.Prod):
+        self._http_client = HttpClient(resource_id=environment.resource_id, azure_credential=azure_credential)
         self._base_url = environment.base_url.rstrip('/')
 
     def write_data(self, id: str, data: DatapointsPostRequestModel, write_async: Optional[bool] = None) -> MessageModel:
