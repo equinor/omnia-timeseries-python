@@ -1,6 +1,6 @@
 from typing import List, Literal, Optional
 from azure.identity._internal.msal_credentials import MsalCredential
-from omnia_timeseries.http_client import HttpClient, ContentType, RequestType
+from omnia_timeseries.http_client import HttpClient, ContentType
 from omnia_timeseries.models import (
     DatapointModel,
     DatapointsItemsModel, DatapointsPostRequestModel,
