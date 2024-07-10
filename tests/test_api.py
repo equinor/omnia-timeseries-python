@@ -37,9 +37,10 @@ def should_not_retry_request_when_failing_on_non_retryable_error_code_403_forbid
             api.get_latest_datapoint("1234")
     assert m.call_count == 1, "Unexpected number of retries"
 
-def should_correctly_parse_empty_response_when_failing_on_502_bad_gateway_due_to_api_timeout(api):
+@pytest.mark.parametrize("responseText",[(""),("blah")])
+def should_try_parse_response_when_failing_on_502_bad_gateway_due_to_api_timeout(api, responseText):
     with requests_mock.Mocker() as m:
-        m.register_uri("POST", "https://test/query/data", status_code=502, text="")
+        m.register_uri("POST", "https://test/query/data", status_code=502, text=responseText)
 
         with pytest.raises(TimeseriesRequestFailedException):
             api.get_multi_datapoints([

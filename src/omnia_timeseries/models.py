@@ -184,7 +184,10 @@ class StreamSubscriptionDataModel(TypedDict):
 
 class TimeseriesRequestFailedException(Exception):
     def __init__(self, response: Response) -> None:
-        error = {"message":"Response is empty"} if response.text == '' else json.loads(response.text)
+        try:
+            error=json.loads(response.text)
+        except:
+            error={"message": f"Could not load response, raw response: '{response.text}'"}
         self._status_code = response.status_code
         self._reason = response.reason
         self._message = error["message"]
