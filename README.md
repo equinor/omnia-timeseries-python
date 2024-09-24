@@ -12,16 +12,6 @@ $ pip install git+https://github.com/equinor/omnia-timeseries-python.git@main
 
 For support, create an issue on GitHub.
 
-### Development
-
-To start developing the package, install it in editable mode:
-
-```
-$ git clone https://github.com/equinor/omnia-timeseries-python
-$ cd omnia-timeseries-python
-$ pip install -e .
-```
-
 ## Example usage
 
 ### Preparing Azure authentication
@@ -102,4 +92,4 @@ api = TimeseriesAPI(
 
 ### Other use cases
 
-Please consult the [API Reference](https://api.equinor.com/docs/services/Timeseries-api-v1-7) for a full overview of the API endpoints.
+Please consult the [API Reference](https://api.equinor.com/api-details#api=Timeseries-api-v1-7) for a full overview of the API endpoints.
