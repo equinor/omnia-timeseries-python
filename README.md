@@ -28,7 +28,6 @@ Please read https://github.com/equinor/OmniaPlant/wiki/Authentication-&-Authoriz
 We support the following authentication flows:
 - Client (service principal) credentials: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow
 - User impersonation: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow
-- Managed Service Identity (MSI): https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview
 
 The supported credential setups are shown below.
 
