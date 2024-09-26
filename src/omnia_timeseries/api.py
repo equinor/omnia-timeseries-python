@@ -20,18 +20,20 @@ logger = logging.getLogger(__name__)
 
 class TimeseriesEnvironment:
     def __init__(self, resource_id: str, base_url: str):
+        '''
+        Wrapper class for defining which timeseries environment the TimeseriesAPI client will interface to
+
+        :param str resource_id: Resource/client id of API app registration (Azure SPN)
+        :param str base_url: Baze url of API
+        '''
         self._resource_id = resource_id
         self._base_url = base_url
 
     @classmethod
     def Test(cls, version: TimeseriesVersion = "1.7"):
-        return cls(
-            resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
-            base_url=f"https://api-test.gateway.equinor.com/plant/timeseries/v{version}"
-        )
-
-    @classmethod
-    def Beta(cls, version: TimeseriesVersion = "1.7"):
+        '''
+        Sets up non-production environment
+        '''
         return cls(
             resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
             base_url=f"https://api-test.gateway.equinor.com/plant/timeseries/v{version}"
@@ -39,6 +41,9 @@ class TimeseriesEnvironment:
 
     @classmethod
     def Prod(cls, version: TimeseriesVersion = "1.7"):
+        '''
+        Sets up production environment
+        '''
         return cls(
             resource_id="141369bd-3dca-4b55-825b-56ad4a69b1fc",
             base_url=f"https://api.gateway.equinor.com/plant/timeseries/v{version}"
@@ -57,12 +62,9 @@ class TimeseriesAPI:
     """
     Wrapper class for interacting with the Omnia Industrial IIoT Timeseries API.
     For more information, see https://github.com/equinor/OmniaPlant/wiki or consult with the Omnia IIoT team.
-    Args:
-        :param azure_credential: Azure credential instance used for authenticating
-        :type azure_credential: MsalCredential
 
-        :param environment: API deployment environment
-        :type environment: TimeseriesEnvironment
+    :param MsalCredential azure_credential: Azure credential instance used for authenticating
+    :param TimeseriesEnvironment environment: API deployment environment
     """
 
     def __init__(self, azure_credential: MsalCredential, environment: TimeseriesEnvironment):
