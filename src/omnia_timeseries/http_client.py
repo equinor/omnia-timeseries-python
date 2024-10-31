@@ -2,6 +2,9 @@ from typing import Literal, Optional, TypedDict, Union, Dict, Any
 from azure.identity._internal.msal_credentials import MsalCredential
 import requests
 import logging
+from azure.identity import ManagedIdentityCredential
+import os
+
 
 from omnia_timeseries.helpers import retry
 from omnia_timeseries.models import TimeseriesRequestFailedException
@@ -13,6 +16,9 @@ ContentType = Literal["application/json",
                       "application/protobuf", "application/x-google-protobuf"]
 
 RequestType = Literal['get', 'put', 'post', 'patch', 'delete']
+
+CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
+credential = ManagedIdentityCredential(client_id=CLIENT_ID)
 
 logger = logging.getLogger(__name__)
 version = metadata.version("omnia_timeseries")
@@ -54,8 +60,15 @@ class HttpClient:
         params: Optional[Dict[str, Any]] = None
     ) -> Any:
 
-        access_token = self._azure_credential.get_token(
-            f'{self._resource_id}/.default')  # handles caching and refreshing internally
+        if "KUBERNETES_SERVICE_HOST" in os.environ:
+            access_token = credential.get_token(
+                'https://management.azure.com/.default'
+            )
+        else:
+            access_token = self._azure_credential.get_token(
+                f'{self._resource_id}/.default'
+            )
+
         headers = {
             'Authorization': f'Bearer {access_token.token}',
             'Content-Type': 'application/json',
