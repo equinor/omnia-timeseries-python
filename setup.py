@@ -9,16 +9,9 @@ setup(
     packages=find_packages(where='src'),  # Look for packages in the `src` directory
     package_dir={'': 'src'},    
     install_requires=[
-        'azure-identity',         
-        'azure-mgmt-resource',     
-
-        'requests',                
-        'requests-oauthlib',       
-        'adal',                    
-        'msal',                    
-        'PyJWT',                   
-        'azure-storage-blob',      
-        'azure-keyvault-secrets',  
+        'azure-identity',
+        'requests',                 
+        'azure-storage-blob'
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
