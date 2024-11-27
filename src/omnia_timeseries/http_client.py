@@ -46,33 +46,96 @@ def _request(
         return response.content
 
 
-class HttpClient:
-    def __init__(self, azure_credential: MsalCredential, resource_id: str):
+# class AzureAuthenticator:
+#     def __init__(self, azure_credential):
+#         self._azure_credential = azure_credential
+
+#     def get_token(self, resource_id: str) -> str:
+#         auth_endpoint = (
+#             "https://management.azure.com/.default"
+#             if "azureml" in resource_id.lower()
+#             else f"{resource_id}/.default"
+#         )
+
+#         token = self._azure_credential.get_token(auth_endpoint)
+#         return token.token
+
+
+# class HttpClient:
+#     def __init__(self, azure_credential: MsalCredential, resource_id: str):
+#         self._azure_credential = azure_credential
+#         self._resource_id = resource_id
+
+#     def request(
+#         self,
+#         request_type: RequestType,
+#         url: str,
+#         accept: ContentType = "application/json",
+#         payload: Optional[Union[TypedDict, dict, list]] = None,
+#         params: Optional[Dict[str, Any]] = None
+#     ) -> Any:
+
+#         access_token = self._azure_credential.get_token(
+#             f'{self._resource_id}/.default'
+#         )
+
+#         headers = {
+#             'Authorization': f'Bearer {access_token.token}',
+#             'Content-Type': 'application/json',
+#             'Accept': accept,
+#             'User-Agent': f'Omnia Timeseries SDK/{version} {system_version_string}'
+#         }
+
+#         print(f"Access token: {access_token.token}")
+#         return _request(request_type=request_type, url=url, headers=headers, payload=payload, params=params)
+
+
+class AzureAuthenticator:
+    def __init__(self, azure_credential):
         self._azure_credential = azure_credential
+
+    def get_auth_endpoint(self, resource_id: str) -> str:
+        return (
+            "https://management.azure.com/.default"
+            if "azureml" in resource_id.lower()
+            else f"{resource_id}/.default"
+        )
+
+    def get_token(self, resource_id: str) -> str:
+        auth_endpoint = self.get_auth_endpoint(resource_id)
+        token = self._azure_credential.get_token(auth_endpoint)
+        return token.token
+
+
+class HttpClient:
+    def __init__(self, azure_authenticator: AzureAuthenticator, resource_id: str):
+        self._azure_authenticator = azure_authenticator
         self._resource_id = resource_id
 
     def request(
         self,
-        request_type: RequestType,
+        request_type: str,
         url: str,
-        accept: ContentType = "application/json",
-        payload: Optional[Union[TypedDict, dict, list]] = None,
-        params: Optional[Dict[str, Any]] = None
+        accept: str = "application/json",
+        payload: Optional[Union[dict, list]] = None,
+        params: Optional[Dict[str, Any]] = None,
     ) -> Any:
+        
+        # Get the auth endpoint from AzureAuthenticator
+        auth_endpoint = self._azure_authenticator.get_auth_endpoint(self._resource_id)
 
-        if "KUBERNETES_SERVICE_HOST" in os.environ:
-            access_token = credential.get_token(
-                'https://management.azure.com/.default'
-            )
-        else:
-            access_token = self._azure_credential.get_token(
-                f'{self._resource_id}/.default'
-            )
+        # Get the token for the resolved endpoint
+        access_token = self._azure_authenticator.get_token(self._resource_id)
+
 
         headers = {
-            'Authorization': f'Bearer {access_token.token}',
-            'Content-Type': 'application/json',
-            'Accept': accept,
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Accept": accept,
             'User-Agent': f'Omnia Timeseries SDK/{version} {system_version_string}'
         }
-        return _request(request_type=request_type, url=url, headers=headers, payload=payload, params=params)
+
+        print(f"Using Auth Endpoint: {auth_endpoint}")
+        print(f"Access Token: {access_token}")
+
+        return self._request(request_type=request_type, url=url, headers=headers, payload=payload, params=params)
