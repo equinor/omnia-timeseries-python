@@ -313,6 +313,7 @@ class TimeseriesAPI:
             url=f"{self._base_url}/{id}/history",
         )
 
+#This endpoint is deprecated, use get_timeseries_by_id
     def get_timeseries(
             self,
             name: Optional[str] = None,
@@ -444,7 +445,7 @@ class TimeseriesAPI:
         )
 
     def get_streaming_subscriptions(self) -> StreamSubscriptionDataModel:
-        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=getStreamSubscriptions"""
+        """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetSubscriptions"""
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/streaming/subscriptions"
