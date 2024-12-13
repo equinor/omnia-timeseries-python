@@ -7,7 +7,7 @@ Python package for interacting with the [Omnia Industrial IoT Timeseries API](ht
 To use the Python package, install it in the following manner:
 
 ```
-$ pip install git+https://github.com/equinor/omnia-timeseries-python.git@main
+pip install git+https://github.com/equinor/omnia-timeseries-python.git@main
 ```
 
 For support, create an issue on GitHub.

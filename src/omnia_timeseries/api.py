@@ -30,6 +30,16 @@ class TimeseriesEnvironment:
         self._base_url = base_url
 
     @classmethod
+    def Dev(cls, version: TimeseriesVersion = "1.7"):
+        '''
+        Sets up non-production dev environment
+        '''
+        return cls(
+            resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
+            base_url=f"https://api-dev.gateway.equinor.com/plant/timeseries/v{version}"
+        )
+
+    @classmethod
     def Test(cls, version: TimeseriesVersion = "1.7"):
         '''
         Sets up non-production environment
