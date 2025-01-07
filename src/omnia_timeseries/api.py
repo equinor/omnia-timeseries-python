@@ -12,11 +12,16 @@ from omnia_timeseries.models import (
     TimeseriesPatchRequestItem, TimeseriesRequestItem
 )
 import logging
+from enum import Enum
 
 TimeseriesVersion = Literal["1.6", "1.7"]
 
 logger = logging.getLogger(__name__)
 
+class FederationSource(Enum):
+    IMS = 'IMS'
+    TSDB = 'TSDB'
+    DataLake = 'DataLake'
 
 class TimeseriesEnvironment:
     def __init__(self, resource_id: str, base_url: str):
@@ -335,7 +340,7 @@ class TimeseriesAPI:
             continuationToken: Optional[str] = None,
             **kwargs) -> GetTimeseriesResponseModel:
         """
-        https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=getTimeseries
+        https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=Getall
         Note that maximum result set is 100.000 items.
         """
         params = kwargs or {}
