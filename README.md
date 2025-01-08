@@ -18,7 +18,7 @@ For fundamental questions please refer to the MSAL documentation which has [code
 
 You should also familiarize yourself with the [azure.identity](https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme?view=azure-python) package, which we will use below.
 
-Follow [client credentials flow example](https://github.com/equinor/omnia-timeseries-python/blob/main/examples/usage_example.ipynb) to learn how to retrieve data in `Json` format.  
+Follow [usage example](https://github.com/equinor/omnia-timeseries-python/blob/main/examples/usage_example.ipynb) to learn how to retrieve data in `Json` format.  
 Follow [get data as protobuf example](https://github.com/equinor/omnia-timeseries-python/blob/main/examples/get_data_protobuf.ipynb) to learn how to retrieve data in `Protobuf` format.
 
 ### Preparing Azure authentication
