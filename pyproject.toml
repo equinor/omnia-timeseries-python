@@ -1,21 +1,22 @@
-[tool.poetry]
+[project]
 name = "omnia_timeseries"
 version = "1.3.13"
-authors = ["Equinor Omnia Industrial IoT Team <omniaindiot@equinor.com>"]
-homepage = "https://github.com/equinor/omnia-timeseries-python"
-repository = "https://github.com/equinor/omnia-timeseries-python"
+authors = [
+	{ name = "Equinor Omnia Industrial IoT Team", email = "omniaindiot@equinor.com" }
+]
 description = "Official Python SDK for the Omnia Timeseries API"
 readme = "README.md"
+requires-python = ">=3.8,<4.0"
 
-[tool.poetry.dependencies]
-python = "^3.8"
-requests = "*"
-azure-identity = ">=1.19.0"
-azure-core = "*"
-opentelemetry-instrumentation-requests = "^0.48b0"
-opentelemetry-api = "^1.27.0"
-cryptography = ">=43.0.1"
-pyjwt = ">=2.9.0"
+dependencies =[
+"requests",
+"azure-identity >=1.19.0",
+"azure-core",
+"opentelemetry-instrumentation-requests >=0.48b0,<1.0.0",
+"opentelemetry-api >=1.27.0,<2.0.0",
+"cryptography >=43.0.1",
+"pyjwt >=2.9.0"
+]
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"
@@ -24,6 +25,9 @@ requests-mock = "*"
 [tool.poetry.group.dev.dependencies]
 poetry = ">1.8.4,<3.0"
 
+[project.urls]
+repository = "https://github.com/equinor/omnia-timeseries-python"
+
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0,<3.0"]
 build-backend = "poetry.core.masonry.api"
