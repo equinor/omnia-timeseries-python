@@ -23,7 +23,6 @@ pytest = "*"
 requests-mock = "*"
 
 [tool.poetry.group.dev.dependencies]
-poetry = ">1.8.4,<3.0"
 
 [project.urls]
 repository = "https://github.com/equinor/omnia-timeseries-python"
