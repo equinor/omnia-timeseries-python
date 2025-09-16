@@ -43,8 +43,9 @@ class GetMultipleDatapointsRequestItem(TypedDict, total=False):
     statusFilter: Optional[List[int]]
     includeOutsidePoints: Optional[bool]
     fill: Optional[str]
-    aggregateFunctions: Optional[List[Literal[
-        'avg', 'min', 'max', 'sum', 'stddev', 'count', 'first', 'last']]]
+    aggregateFunctions: Optional[
+        List[Literal["avg", "min", "max", "sum", "stddev", "count", "first", "last"]]
+    ]
     processingInterval: Optional[str]
     continuationToken: Optional[str]
 
@@ -185,15 +186,18 @@ class StreamSubscriptionDataModel(TypedDict):
 class TimeseriesRequestFailedException(Exception):
     def __init__(self, response: Response) -> None:
         try:
-            error=json.loads(response.text)
+            error = json.loads(response.text)
         except:
-            error={"message": f"Could not load response, raw response: '{response.text}'"}
+            error = {
+                "message": f"Could not load response, raw response: '{response.text}'"
+            }
         self._status_code = response.status_code
         self._reason = response.reason
         self._message = error["message"]
         self._trace_id = error["traceId"] if "traceId" in error else None
         super().__init__(
-            f"Status code: {self._status_code}, Reason: {self._reason}, Message: {self._message},  Trace ID: {self._trace_id}")
+            f"Status code: {self._status_code}, Reason: {self._reason}, Message: {self._message},  Trace ID: {self._trace_id}"
+        )
 
     @property
     def status_code(self) -> int:
