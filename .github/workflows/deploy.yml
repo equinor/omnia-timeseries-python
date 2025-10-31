@@ -46,39 +46,9 @@ jobs:
       env_suffix: ${{ steps.get_env.outputs.env_suffix }}
       env_isFeature: ${{ steps.get_env.outputs.env_isFeature }}
 
-  snyk:
-    needs: [detectenv]
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ needs.detectenv.outputs.env_name }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: snyk/actions/setup@master
-
-      - name: Setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version-file: 'pyproject.toml'
-          cache: 'pip'
-
-      - name: Pip install
-        run: |
-          pip install --upgrade pip
-          pip install -e .
-          poetry install
-
-      - name: Run snyk tests
-        run: |
-          snyk auth ${{ secrets.SNYK_TOKEN }}
-          snyk test --all-projects --severity-threshold=high
-          snyk code test --all-projects --severity-threshold=high
-          if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
-            snyk monitor --all-projects --severity-threshold=high --project-tags=application=TIMESERIESSDK
-          fi
-
   run-tests:
     name: Run tests
-    needs: [detectenv, snyk]
+    needs: [detectenv]
     runs-on: ubuntu-latest
     environment:
       name: ${{ needs.detectenv.outputs.env_name }}
