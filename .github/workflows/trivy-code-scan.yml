@@ -10,7 +10,7 @@ permissions: {}
 
 on:
   push:
-    branches: ["feature/add-trivy"]
+    branches: ["main"]
   pull_request:
     branches: ["main"] 
   schedule:
