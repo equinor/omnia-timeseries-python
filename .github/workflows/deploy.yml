@@ -68,7 +68,7 @@ jobs:
 
       - name: Install dependencies and run tests
         run: |
-          poetry install --without dev --no-interaction --no-root
+          poetry install --without dev --no-interaction
           poetry run pytest          
 
   build:
