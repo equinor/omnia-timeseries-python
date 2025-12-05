@@ -21,9 +21,23 @@ pytest = ">=7.4.0,<8.0.0"
 requests-mock = ">=1.9.0,<2.0.0"
 
 [tool.poetry.group.dev.dependencies]
+pre-commit = ">=3.0.0,<5.0.0"
+black = ">=22.0,<26.0"
 
 [tool.poetry.urls]
 repository = "https://github.com/equinor/omnia-timeseries-python"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+exclude = '^/src/version.py'
+extend-exclude = '''
+(
+^/foo.py
+| .*_pb2.py
+)
+'''
 
 [build-system]
 requires = ["poetry-core>=2.0,<3.0"]
