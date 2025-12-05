@@ -66,13 +66,10 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH  # Add Poetry to PATH
 
-      - name: Install dependencies
+      - name: Install dependencies and run tests
         run: |
           poetry install --without dev --no-interaction --no-root
-
-      - name: Run tests
-        run: |
-          poetry run pytest  # Use Poetry to run your tests
+          poetry run pytest          
 
   build:
     needs: [detectenv, run-tests]
@@ -94,13 +91,10 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH  # Add Poetry to PATH
 
-      - name: Install dependencies
+      - name: Install dependencies and Build SDK
         run: |
           poetry install --without dev,test --no-interaction --no-root  # Install only main dependencies
-
-      - name: Build SDK
-        run: |
-          poetry build  # Use Poetry to build the project
+          poetry build
 
       - name: Release
         uses: ncipollo/release-action@v1
