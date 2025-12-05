@@ -10,7 +10,12 @@ Here are some resources to help you get started with open source contributions:
 
 ### Contribution guidelines ###
 
-* Create new branch from develop
+* Clone the repository or Create new branch from develop
+* Navigate to the project root directory
+* Setup pre-commit hook
+    * poetry install - Installs all dependencies, including pre-commit
+    * poetry run pre-commit install - Installs pre-commit hooks
+* Write code
 * Write tests
 * Create a PR
 * Code review

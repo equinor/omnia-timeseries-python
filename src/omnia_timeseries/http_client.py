@@ -1,4 +1,4 @@
-from typing import Literal, Optional, TypedDict, Union, Dict, Any
+from typing import Literal, List, Optional, Union, Dict, Any
 from azure.identity._internal.msal_credentials import MsalCredential
 import requests
 import logging
@@ -31,7 +31,7 @@ def _request(
     request_type: RequestType,
     url: str,
     headers: Dict[str, Any],
-    payload: Optional[Union[TypedDict, dict, list]] = None,
+    payload: Optional[Union[Dict, Dict, List]] = None,
     params: Optional[Dict[str, Any]] = None,
 ) -> Union[Dict[str, Any], bytes]:
 
@@ -40,7 +40,7 @@ def _request(
     )
     if not response.ok:
         raise TimeseriesRequestFailedException(response)
-    if not "Accept" in headers or headers["Accept"] == "application/json":
+    if "Accept" not in headers or headers["Accept"] == "application/json":
         return response.json()
     else:
         return response.content
@@ -56,7 +56,7 @@ class HttpClient:
         request_type: RequestType,
         url: str,
         accept: ContentType = "application/json",
-        payload: Optional[Union[TypedDict, dict, list]] = None,
+        payload: Optional[Union[Dict, Dict, List]] = None,
         params: Optional[Dict[str, Any]] = None,
     ) -> Any:
 
