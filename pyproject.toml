@@ -4,7 +4,7 @@ version = "1.3.13"
 description = "Official Python SDK for the Omnia Timeseries API"
 readme = "README.md"
 authors = ["Equinor Omnia Industrial IoT Team <omniaindiot@equinor.com>"]
-license = { file = "LICENSE" }
+license = "LICENSE"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
