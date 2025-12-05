@@ -61,11 +61,18 @@ jobs:
           python-version-file: 'pyproject.toml'
           cache: 'pip'
 
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH  # Add Poetry to PATH
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev --no-interaction --no-root
+
       - name: Run tests
         run: |
-          pip install --upgrade pip
-          pip install -e .
-          python -m pytest
+          poetry run pytest  # Use Poetry to run your tests
 
   build:
     needs: [detectenv, run-tests]
@@ -82,11 +89,18 @@ jobs:
           python-version-file: 'pyproject.toml'
           cache: 'pip'
 
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH  # Add Poetry to PATH
+
+      - name: Install dependencies
+        run: |
+          poetry install --without dev,test --no-interaction --no-root  # Install only main dependencies
+
       - name: Build SDK
         run: |
-          pip install --upgrade pip
-          pip install -e .
-          python -m build
+          poetry build  # Use Poetry to build the project
 
       - name: Release
         uses: ncipollo/release-action@v1
