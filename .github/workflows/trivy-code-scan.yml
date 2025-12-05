@@ -1,0 +1,51 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Trivy IaC & Dockerfile Scanning
+
+# In this case we give it no permissions by default and rather set them explicitly in the job.
+permissions: {}
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"] 
+  schedule:
+    # Run at 08:00 every Sunday
+    - cron: '0 8 * * 0'
+
+jobs:
+  trivy-scan:
+    name: Trivy Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      security-events: write 
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          # Ensures that the credentials used for checking out the repository are not persisted or accessed by the following jobs
+          persist-credentials: false
+
+      - name: Run Trivy vulnerability Scanner
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8
+        with:
+          scan-type: 'config'
+          severity: 'CRITICAL,HIGH'
+          limit-severities-for-sarif: true 
+          format: 'sarif'
+          output: 'trivy-results-iac.sarif'
+          exit-code: '0'
+
+      # Upload Trivy IaC & Dockerfile scan results to Github Security
+      - name: Upload scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-results-iac.sarif'

@@ -97,6 +97,9 @@ __pypackages__/
 # Test output
 test-output.xml
 
+# Poetry
+poetry.lock
+
 # VS Code
 .vscode/
 

@@ -46,14 +46,14 @@ jobs:
       env_suffix: ${{ steps.get_env.outputs.env_suffix }}
       env_isFeature: ${{ steps.get_env.outputs.env_isFeature }}
 
-  snyk:
+  run-tests:
+    name: Run tests
     needs: [detectenv]
     runs-on: ubuntu-latest
     environment:
       name: ${{ needs.detectenv.outputs.env_name }}
     steps:
       - uses: actions/checkout@v4
-      - uses: snyk/actions/setup@master
 
       - name: Setup python
         uses: actions/setup-python@v4
@@ -61,41 +61,15 @@ jobs:
           python-version-file: 'pyproject.toml'
           cache: 'pip'
 
-      - name: Pip install
+      - name: Install Poetry
         run: |
-          pip install --upgrade pip
-          pip install -e .
-          poetry install
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH  # Add Poetry to PATH
 
-      - name: Run snyk tests
+      - name: Install dependencies and run tests
         run: |
-          snyk auth ${{ secrets.SNYK_TOKEN }}
-          snyk test --all-projects --severity-threshold=high
-          snyk code test --all-projects --severity-threshold=high
-          if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
-            snyk monitor --all-projects --severity-threshold=high --project-tags=application=TIMESERIESSDK
-          fi
-
-  run-tests:
-    name: Run tests
-    needs: [detectenv, snyk]
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ needs.detectenv.outputs.env_name }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version-file: 'pyproject.toml'
-          cache: 'pip'
-
-      - name: Run tests
-        run: |
-          pip install --upgrade pip
-          pip install -e .
-          python -m pytest
+          poetry install --without dev --no-interaction
+          poetry run pytest          
 
   build:
     needs: [detectenv, run-tests]
@@ -112,11 +86,15 @@ jobs:
           python-version-file: 'pyproject.toml'
           cache: 'pip'
 
-      - name: Build SDK
+      - name: Install Poetry
         run: |
-          pip install --upgrade pip
-          pip install -e .
-          python -m build
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH  # Add Poetry to PATH
+
+      - name: Install dependencies and Build SDK
+        run: |
+          poetry install --without dev,test --no-interaction --no-root  # Install only main dependencies
+          poetry build
 
       - name: Release
         uses: ncipollo/release-action@v1

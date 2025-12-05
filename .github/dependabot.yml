@@ -1,0 +1,12 @@
+# Dependabot configuration file
+# Documentation: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuring-dependabot-version-updates
+# For reference for all possible options: https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+version: 2
+
+updates:
+  - package-ecosystem: pip
+    commit-message:
+      prefix: deps(pip)
+    directory: "/"
+    schedule:
+      interval: weekly
