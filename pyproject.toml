@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "omnia_timeseries"
-version = "1.4.0"
+version = "1.4.1"
 description = "Official Python SDK for the Omnia Timeseries API"
 readme = "README.md"
 authors = ["Equinor Omnia Industrial IoT Team <omniaindiot@equinor.com>"]
