@@ -23,15 +23,18 @@ Follow [get data as protobuf example](https://github.com/equinor/omnia-timeserie
 
 ### Preparing Azure authentication
 
-Please read https://github.com/equinor/OmniaPlant/wiki/Authentication-&-Authorization to familiarize yourself with how Timeseries API handles authentication and authorization.
+Read https://github.com/equinor/OmniaPlant/wiki/Authentication-&-Authorization to familiarize yourself with how Timeseries API handles authentication and authorization.
 
-We support the following authentication flows:
-- Client (service principal) credentials: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow
-- User impersonation: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow
+The `TimeseriesAPI` client accepts any `azure.identity` credential that inherits from `MsalCredential`, so you can pick the flow that suits your environment. The options we currently cover are:
+
+- **Service principal with client secret** (`ClientSecretCredential`) for headless service-to-service scenarios.
+- **Service principal with certificate** (`ClientCertificateCredential`) when you prefer cert-based authentication instead of a secret.
+- **Managed identities / default credential chain** (`ManagedIdentityCredential` or `DefaultAzureCredential`) when running inside Azure.
+- **Interactive browser login** (`InteractiveBrowserCredential`) for local development where you can complete the sign-in with a browser.
 
 The supported credential setups are shown below.
 
-#### With service principal credentials
+#### With service principal credentials (client secret)
 
 Read [Service-to-service using a shared secret](https://github.com/equinor/OmniaPlant/wiki/Authentication-&-Authorization#service-to-service-using-a-shared-secret) and ensure prerequisite steps have been done.
 
@@ -45,28 +48,34 @@ credentials = ClientSecretCredential(
 )
 ```
 
-#### With user impersonation
+#### With service principal credentials (client certificate)
 
-Read [Authenticating by user impersonation without any shared secret (For people with Equinor accounts)](https://github.com/equinor/OmniaPlant/wiki/Authentication-&-Authorization#authenticating-by-user-impersonation-without-any-shared-secret-for-people-with-equinor-accounts) and ensure prerequisite steps have been done.
-
-For testing user impersonation you can use our public client ids:
-
-- 675bd975-260f-498e-82cd-65f67b34fe7d (test)
-- 67da184b-6bde-43fd-a155-30ed4ff162d2 (production)
+Use a certificate instead of a shared secret when you want a stronger identity proof and avoid storing plain secrets.
 
 ```python
-from azure.identity import DeviceCodeCredential
+from azure.identity import ClientCertificateCredential
 import os
-credentials = DeviceCodeCredential(
+credentials = ClientCertificateCredential(
+    tenant_id=os.environ['AZURE_TENANT_ID'],
+    client_id=os.environ['AZURE_CLIENT_ID'],
+    certificate_path=os.environ['AZURE_CLIENT_CERT_PATH']
+)
+```
+
+#### With interactive browser login
+
+When developing locally, you can open a browser window and sign in manually.
+
+```python
+from azure.identity import InteractiveBrowserCredential
+import os
+credentials = InteractiveBrowserCredential(
     tenant_id=os.environ['AZURE_TENANT_ID'],
     client_id=os.environ['AZURE_CLIENT_ID']
 )
 ```
 
-During authentication, this will display a URL to visit, and a code to enter. After completing
-the flow, execution will proceed.
-
-#### With default credentials (azure cli, MSI and so on)
+#### With managed / default credentials
 
 Read [Managed Service Identity (For Equinor applications in Azure)](https://github.com/equinor/OmniaPlant/wiki/Authentication-&-Authorization#managed-service-identity-for-equinor-applications-in-azure) and ensure prerequisite steps have been done.
 
