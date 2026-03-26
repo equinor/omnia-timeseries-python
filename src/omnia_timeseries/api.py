@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 from azure.identity._internal.msal_credentials import MsalCredential
 from omnia_timeseries.http_client import HttpClient, ContentType
 from omnia_timeseries.models import (
@@ -111,6 +111,11 @@ class TimeseriesAPI:
         self._base_url = environment.base_url.rstrip("/")
         self._debug_mode = False
 
+    def _add_debug_param(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        if self._debug_mode:
+            params["debug"] = True
+        return params
+
     def write_data(
         self,
         id: str,
@@ -164,8 +169,7 @@ class TimeseriesAPI:
             params["continuationToken"] = continuationToken
         if federationSource is not None:
             params["federationSource"] = federationSource
-        if self._debug_mode:
-            params["debug"] = "true"
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/{id}/data",
@@ -207,8 +211,7 @@ class TimeseriesAPI:
             params["continuationToken"] = continuationToken
         if federationSource is not None:
             params["federationSource"] = federationSource
-        if self._debug_mode:
-            params["debug"] = "true"
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/query/data",
@@ -232,8 +235,7 @@ class TimeseriesAPI:
             params["continuationToken"] = continuationToken
         if federationSource is not None:
             params["federationSource"] = federationSource
-        if self._debug_mode:
-            params["debug"] = "true"
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="post",
             url=f"{self._base_url}/query/data",
@@ -281,8 +283,7 @@ class TimeseriesAPI:
             params["continuationToken"] = continuationToken
         if federationSource is not None:
             params["federationSource"] = federationSource
-        if self._debug_mode:
-            params["debug"] = "true"
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/{id}/data/aggregates",
@@ -309,8 +310,7 @@ class TimeseriesAPI:
             params["status"] = status
         if federationSource is not None:
             params["federationSource"] = federationSource
-        if self._debug_mode:
-            params["debug"] = "true"
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/{id}/data/first",
@@ -337,8 +337,7 @@ class TimeseriesAPI:
             params["status"] = status
         if federationSource is not None:
             params["federationSource"] = federationSource
-        if self._debug_mode:
-            params["debug"] = "true"
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/{id}/data/latest",
@@ -374,8 +373,7 @@ class TimeseriesAPI:
         params = {}
         if federationSource is not None:
             params["federationSource"] = federationSource
-        if self._debug_mode:
-            params["debug"] = "true"
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="post",
             url=f"{self._base_url}/query/data/latest",
