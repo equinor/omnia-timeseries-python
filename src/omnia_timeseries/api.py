@@ -224,8 +224,8 @@ class TimeseriesAPI:
         request: List[GetMultipleDatapointsRequestItem],
         continuationToken: Optional[str] = None,
         federationSource: Optional[Enum] = None,
-        alignToCache: Optional[bool] = None,
         accept: ContentType = "application/json",
+        alignToCache: Optional[bool] = None,
     ) -> GetAggregatesResponseModel:
         """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetMultipleData"""
         params = {}
@@ -256,10 +256,10 @@ class TimeseriesAPI:
         processingInterval: Optional[str] = None,
         fill: Optional[str] = None,
         limit: Optional[int] = None,
-        alignToCache: Optional[bool] = None,
         continuationToken: Optional[str] = None,
         federationSource: Optional[Enum] = None,
         accept: ContentType = "application/json",
+        alignToCache: Optional[bool] = None,
     ) -> GetAggregatesResponseModel:
         """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetAggregatedData"""
         params = {}
