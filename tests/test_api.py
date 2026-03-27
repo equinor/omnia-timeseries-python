@@ -77,3 +77,49 @@ def should_try_parse_response_when_failing_on_502_bad_gateway_due_to_api_timeout
                 ]
             )
     assert m.call_count == 3, "Unexpected number of retries"
+
+
+def should_forward_align_to_cache_parameter_for_multi_datapoints(api):
+    with requests_mock.Mocker() as m:
+        m.register_uri(
+            "POST",
+            "https://test/query/data",
+            json={"data": {"items": []}},
+        )
+        api.get_multi_datapoints([{"id": "series-1"}], alignToCache=True)
+        assert m.call_count == 1, "Expected a single request"
+        request = m.request_history[0]
+        assert request.qs.get("aligntocache") == [
+            "true"
+        ], "alignToCache should be forwarded"
+
+
+def should_forward_align_to_cache_parameter_for_get_aggregates(api):
+    with requests_mock.Mocker() as m:
+        m.register_uri(
+            "GET",
+            "https://test/1234/data/aggregates",
+            json={"data": {"items": []}},
+        )
+        api.get_aggregates("1234", ["avg"], alignToCache=False)
+        assert m.call_count == 1, "Expected a single request"
+        request = m.request_history[0]
+        assert request.qs.get("aligntocache") == [
+            "false"
+        ], "alignToCache should be forwarded as false"
+
+
+def should_include_debug_query_param_when_debug_mode_is_enabled(api):
+    api._debug_mode = True
+    with requests_mock.Mocker() as m:
+        m.register_uri(
+            "POST",
+            "https://test/query/data",
+            json={"data": {"items": []}},
+        )
+        api.get_multi_datapoints([{"id": "series-1"}])
+        assert m.call_count == 1, "Expected a single request"
+        request = m.request_history[0]
+        assert request.qs.get("debug") == [
+            "true"
+        ], "Debug mode should inject debug=true"

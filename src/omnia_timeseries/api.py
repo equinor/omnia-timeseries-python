@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 from azure.identity._internal.msal_credentials import MsalCredential
 from omnia_timeseries.http_client import HttpClient, ContentType
 from omnia_timeseries.models import (
@@ -109,6 +109,12 @@ class TimeseriesAPI:
             azure_credential=azure_credential, resource_id=environment.resource_id
         )
         self._base_url = environment.base_url.rstrip("/")
+        self._debug_mode = False
+
+    def _add_debug_param(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        if self._debug_mode:
+            params["debug"] = True
+        return params
 
     def write_data(
         self,
@@ -163,6 +169,7 @@ class TimeseriesAPI:
             params["continuationToken"] = continuationToken
         if federationSource is not None:
             params["federationSource"] = federationSource
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/{id}/data",
@@ -204,6 +211,7 @@ class TimeseriesAPI:
             params["continuationToken"] = continuationToken
         if federationSource is not None:
             params["federationSource"] = federationSource
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/query/data",
@@ -217,13 +225,17 @@ class TimeseriesAPI:
         continuationToken: Optional[str] = None,
         federationSource: Optional[Enum] = None,
         accept: ContentType = "application/json",
+        alignToCache: Optional[bool] = None,
     ) -> GetAggregatesResponseModel:
         """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetMultipleData"""
         params = {}
+        if alignToCache is not None:
+            params["alignToCache"] = alignToCache
         if continuationToken is not None:
             params["continuationToken"] = continuationToken
         if federationSource is not None:
             params["federationSource"] = federationSource
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="post",
             url=f"{self._base_url}/query/data",
@@ -247,6 +259,7 @@ class TimeseriesAPI:
         continuationToken: Optional[str] = None,
         federationSource: Optional[Enum] = None,
         accept: ContentType = "application/json",
+        alignToCache: Optional[bool] = None,
     ) -> GetAggregatesResponseModel:
         """https://api.equinor.com/api-details#api=Timeseries-api-v1-7&operation=GetAggregatedData"""
         params = {}
@@ -264,10 +277,13 @@ class TimeseriesAPI:
             params["fill"] = fill
         if limit is not None:
             params["limit"] = limit
+        if alignToCache is not None:
+            params["alignToCache"] = alignToCache
         if continuationToken is not None:
             params["continuationToken"] = continuationToken
         if federationSource is not None:
             params["federationSource"] = federationSource
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/{id}/data/aggregates",
@@ -294,6 +310,7 @@ class TimeseriesAPI:
             params["status"] = status
         if federationSource is not None:
             params["federationSource"] = federationSource
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/{id}/data/first",
@@ -320,6 +337,7 @@ class TimeseriesAPI:
             params["status"] = status
         if federationSource is not None:
             params["federationSource"] = federationSource
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="get",
             url=f"{self._base_url}/{id}/data/latest",
@@ -355,6 +373,7 @@ class TimeseriesAPI:
         params = {}
         if federationSource is not None:
             params["federationSource"] = federationSource
+        params = self._add_debug_param(params)
         return self._http_client.request(
             request_type="post",
             url=f"{self._base_url}/query/data/latest",
