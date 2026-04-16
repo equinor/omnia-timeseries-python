@@ -1,5 +1,8 @@
+from dataclasses import dataclass
 from typing import List, Literal, Optional
+from typing_extensions import Self # Python 3.8+ compatible
 from azure.identity._internal.msal_credentials import MsalCredential
+from azure.core.credentials import TokenCredential
 from omnia_timeseries.http_client import HttpClient, ContentType
 from omnia_timeseries.models import (
     DatapointModel,
@@ -11,20 +14,24 @@ from omnia_timeseries.models import (
     GetHistoryResponseModel,
     GetMultipleDatapointsRequestItem,
     GetTimeseriesResponseModel,
+    GetIMSMetadataResponseModel,
     SourceDataModel,
     MessageModel,
     StreamSubscriptionRequestModel,
     StreamSubscriptionDataModel,
+    SubscriptionCounterModel,
     TimeseriesPatchRequestItem,
+    SubscriptionPatchRequestItem,
     TimeseriesRequestItem,
 )
 import logging
 from enum import Enum
 
+IMSMetadataVersion = Literal["1.3"]
+IMSSubscriptionsVersion = Literal["1.2"]
 TimeseriesVersion = Literal["1.6", "1.7"]
 
 logger = logging.getLogger(__name__)
-
 
 class FederationSource(Enum):
     """
@@ -42,47 +49,63 @@ class FederationSource(Enum):
     TSDB = "TSDB"
     DataLake = "DataLake"
 
+# Internal enum to represent environment chosen by user via TimeseriesEnvironment
+class Environment(Enum):
+    Dev = "dev"
+    Test = "test"
+    Prod = "prod"
 
+# User-facing, immutable token accepted by all APIs with Python v3.8 slots-like behaviour
+@dataclass(frozen=True)
 class TimeseriesEnvironment:
-    def __init__(self, resource_id: str, base_url: str):
-        """
-        Wrapper class for defining which timeseries environment the TimeseriesAPI client will interface to
-
-        :param str resource_id: Resource/client id of API app registration (Azure SPN)
-        :param str base_url: Baze url of API
-        """
-        self._resource_id = resource_id
-        self._base_url = base_url
+    __slots__ = ("kind",)
+    kind: Environment
 
     @classmethod
-    def Dev(cls, version: TimeseriesVersion = "1.7"):
+    def Dev(cls) -> Self:
         """
-        Sets up non-production dev environment
+        Set non-production dev environment
         """
-        return cls(
-            resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
-            base_url=f"https://api-dev.gateway.equinor.com/plant/timeseries/v{version}",
-        )
+        return cls(kind=Environment.Dev)
 
     @classmethod
-    def Test(cls, version: TimeseriesVersion = "1.7"):
+    def Test(cls) -> Self:
         """
-        Sets up non-production environment
+        Set non-production test environment
         """
-        return cls(
-            resource_id="32f2a909-8a98-4eb8-b22d-1208d9350cb0",
-            base_url=f"https://api-test.gateway.equinor.com/plant/timeseries/v{version}",
-        )
+        return cls(kind=Environment.Test)
 
     @classmethod
-    def Prod(cls, version: TimeseriesVersion = "1.7"):
+    def Prod(cls) -> Self:
         """
-        Sets up production environment
+        Set production environment
         """
-        return cls(
-            resource_id="141369bd-3dca-4b55-825b-56ad4a69b1fc",
-            base_url=f"https://api.gateway.equinor.com/plant/timeseries/v{version}",
-        )
+        return cls(kind=Environment.Prod)
+
+class IMSMetadataApiEnvironment:
+    def __init__(self, environment: TimeseriesEnvironment, version: IMSMetadataVersion = "1.3"):
+        """
+        Wrapper class for defining which environment the IMS Metadata API client will interface to
+
+        :param TimeseriesEnvironment environment: Value with environment chosen as dev, test or prod
+        """
+
+        # Prepare API connection details
+        if environment.kind is Environment.Dev:
+            self._resource_id = "310547f5-022b-4fb5-b13e-2b468b8bf658"
+            self._base_url = f"https://api-dev.gateway.equinor.com/plant/ims-metadata/v{version}"
+
+        if environment.kind is Environment.Test:
+            self._resource_id = "310547f5-022b-4fb5-b13e-2b468b8bf658"
+            self._base_url = f"https://api-test.gateway.equinor.com/plant/ims-metadata/v{version}"
+
+        if environment.kind is Environment.Prod:
+            self._resource_id = "71415e4e-7131-4a81-9596-f921978cdbee"
+            self._base_url = f"https://api.gateway.equinor.com/plant/ims-metadata/v{version}"
+
+        # Safeguard in case of new, unsupported environment
+        if not hasattr(self, "_resource_id") or not hasattr(self, "_base_url"):
+            raise ValueError(f"Unsupported environment: {environment.kind!r}")
 
     @property
     def resource_id(self) -> str:
@@ -92,6 +115,284 @@ class TimeseriesEnvironment:
     def base_url(self) -> str:
         return self._base_url
 
+class IMSSubscriptionsAPIEnvironment:
+    def __init__(self, environment: TimeseriesEnvironment, version: IMSSubscriptionsVersion = "1.2"):
+        """
+        Wrapper class for defining which environment the IMS Subscriptions API client will interface to
+
+        :param TimeseriesEnvironment environment: Value with environment chosen as dev, test or prod
+        """
+
+        # Prepare API connection details
+        if environment.kind is Environment.Dev:
+            self._resource_id = "789d768e-32ac-417b-b286-be5e0d460809"
+            self._base_url = f"https://api-dev.gateway.equinor.com/plant/ims-subscriptions/v{version}"
+
+        if environment.kind is Environment.Test:
+            self._resource_id = "789d768e-32ac-417b-b286-be5e0d460809"
+            self._base_url = f"https://api-test.gateway.equinor.com/plant/ims-subscriptions/v{version}"
+
+        if environment.kind is Environment.Prod:
+            self._resource_id = "cae23674-f25d-40a2-b9e4-81649b33b957"
+            self._base_url = f"https://api.gateway.equinor.com/plant/ims-subscriptions/v{version}"
+
+        # Safeguard in case of new, unsupported environment
+        if not hasattr(self, "_resource_id") or not hasattr(self, "_base_url"):
+            raise ValueError(f"Unsupported environment: {environment.kind!r}")
+
+    @property
+    def resource_id(self) -> str:
+        return self._resource_id
+
+    @property
+    def base_url(self) -> str:
+        return self._base_url
+
+class IMSSubscriptionsManagementAPIEnvironment:
+    def __init__(self, environment: TimeseriesEnvironment, version: IMSSubscriptionsVersion = "1.2"):
+        """
+        Wrapper class for defining which environment the IMS Subscriptions Management API client will interface to
+
+        :param TimeseriesEnvironment environment: Value with environment chosen as dev, test or prod
+        """
+
+        # Prepare API connection details
+        if environment.kind is Environment.Dev:
+            self._resource_id = "789d768e-32ac-417b-b286-be5e0d460809"
+            self._base_url = f"https://api-dev.gateway.equinor.com/plant/ims-subscriptions-management/v{version}"
+
+        if environment.kind is Environment.Test:
+            self._resource_id = "789d768e-32ac-417b-b286-be5e0d460809"
+            self._base_url = f"https://api-test.gateway.equinor.com/plant/ims-subscriptions-management/v{version}"
+
+        if environment.kind is Environment.Prod:
+            self._resource_id = "cae23674-f25d-40a2-b9e4-81649b33b957"
+            self._base_url = f"https://api.gateway.equinor.com/plant/ims-subscriptions-management/v{version}"
+
+        # Safeguard in case of new, unsupported environment
+        if not hasattr(self, "_resource_id") or not hasattr(self, "_base_url"):
+            raise ValueError(f"Unsupported environment: {environment.kind!r}")
+
+    @property
+    def resource_id(self) -> str:
+        return self._resource_id
+
+    @property
+    def base_url(self) -> str:
+        return self._base_url
+
+class TimeseriesApiEnvironment:
+    def __init__(self, environment: TimeseriesEnvironment, version: TimeseriesVersion = "1.7"):
+        """
+        Wrapper class for defining which environment the Timeseries API client will interface to
+
+        :param TimeseriesEnvironment environment: Value with environment chosen as dev, test or prod
+        """
+
+        # Prepare API connection details
+        if environment.kind is Environment.Dev:
+            self._resource_id = "32f2a909-8a98-4eb8-b22d-1208d9350cb0"
+            self._base_url = f"https://api-dev.gateway.equinor.com/plant/timeseries/v{version}"
+
+        if environment.kind is Environment.Test:
+            self._resource_id = "32f2a909-8a98-4eb8-b22d-1208d9350cb0"
+            self._base_url = f"https://api-test.gateway.equinor.com/plant/timeseries/v{version}"
+
+        if environment.kind is Environment.Prod:
+            self._resource_id = "141369bd-3dca-4b55-825b-56ad4a69b1fc"
+            self._base_url = f"https://api.gateway.equinor.com/plant/timeseries/v{version}"
+
+        # Safeguard in case of new, unsupported environment
+        if not hasattr(self, "_resource_id") or not hasattr(self, "_base_url"):
+            raise ValueError(f"Unsupported environment: {environment.kind!r}")
+
+    @property
+    def resource_id(self) -> str:
+        return self._resource_id
+
+    @property
+    def base_url(self) -> str:
+        return self._base_url
+
+class IMSMetadataAPI:
+    """
+    Wrapper class for interacting with the Omnia Industrial IIoT IMS Metadata API.
+    For more information, see https://github.com/equinor/OmniaPlant/wiki or consult with the Omnia IIoT team.
+
+    :param MsalCredential azure_credential: Azure credential instance used for authenticating
+    :param TimeseriesEnvironment environment: API deployment environment
+    """
+
+    def __init__(
+        self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
+    ):
+        if not isinstance(environment, TimeseriesEnvironment):
+            raise TypeError(f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}")
+        apiEnvironment=IMSMetadataApiEnvironment(environment)
+        self._http_client = HttpClient(
+            azure_credential=azure_credential, resource_id=apiEnvironment.resource_id
+        )
+        self._base_url = apiEnvironment.base_url.rstrip("/")
+
+    def search(
+        self,
+        tag: Optional[str] = None,
+        uid: Optional[str] = None,
+        continuationToken: Optional[str] = None,
+        **kwargs,
+    ) -> GetIMSMetadataResponseModel:
+        """
+        Search IMS Metadata API
+        """
+        params = kwargs or {}
+        if tag is not None:
+            params["tag"] = tag
+        if uid is not None:
+            params["uid"] = uid
+        if continuationToken is not None:
+            params["continuationToken"] = continuationToken
+        url = (
+            f"{self._base_url}/search"
+        )
+        return self._http_client.request(request_type="get", url=url, params=params)
+
+class IMSSubscriptionsAPI:
+    """
+    Wrapper class for interacting with the Omnia Industrial IIoT IMS Subscriptions API.
+    For more information, see https://github.com/equinor/OmniaPlant/wiki or consult with the Omnia IIoT team.
+
+    :param MsalCredential azure_credential: Azure credential instance used for authenticating
+    :param TimeseriesEnvironment environment: API deployment environment
+    """
+
+    def __init__(
+        self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
+    ):
+        if not isinstance(environment, TimeseriesEnvironment):
+            raise TypeError(f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}")
+        apiEnvironment=IMSSubscriptionsAPIEnvironment(environment)
+        self._http_client = HttpClient(
+            azure_credential=azure_credential, resource_id=apiEnvironment.resource_id
+        )
+        self._base_url = apiEnvironment.base_url.rstrip("/")
+
+    def search(
+        self,
+        limit: Optional[int] = 1000,
+        continuationToken: Optional[str] = None,
+        **kwargs,
+    ) -> GetIMSMetadataResponseModel:
+        """
+        Search IMS Subscriptions API
+        """
+        params = kwargs or {}
+        if limit is not None:
+            params["limit"] = limit
+        if continuationToken is not None:
+            params["continuationToken"] = continuationToken
+        url = (
+            f"{self._base_url}"
+        )
+        return self._http_client.request(request_type="get", url=url, params=params)
+
+    def search_by_uid(
+        self,
+        uid: Optional[str] = None,
+        continuationToken: Optional[str] = None,
+        **kwargs,
+    ) -> GetIMSMetadataResponseModel:
+        """
+        Search IMS Subscriptions API
+        """
+        params = kwargs or {}
+        if uid is not None:
+            params["uid"] = uid
+        if continuationToken is not None:
+            params["continuationToken"] = continuationToken
+        url = (
+            f"{self._base_url}/uid"
+        )
+        return self._http_client.request(request_type="get", url=url, params=params)
+
+    def search_by_timeseries_id(
+        self,
+        timeseriesId: Optional[str] = None,
+        continuationToken: Optional[str] = None,
+        **kwargs,
+    ) -> GetIMSMetadataResponseModel:
+        """
+        Search IMS Subscriptions API
+        """
+        params = kwargs or {}
+        if timeseriesId is not None:
+            params["timeseriesId"] = timeseriesId
+        if continuationToken is not None:
+            params["continuationToken"] = continuationToken
+        url = (
+            f"{self._base_url}/timeseriesId"
+        )
+        return self._http_client.request(request_type="get", url=url, params=params)
+
+    def search_by_system_code(
+        self,
+        systemCode: str,
+        **kwargs,
+    ) -> SubscriptionCounterModel:
+        """
+        Search IMS Subscriptions API
+        """
+        params = kwargs or {}
+        url = (
+            f"{self._base_url}/{systemCode}"
+        )
+        return self._http_client.request(request_type="get", url=url, params=params)
+
+class IMSSubscriptionsManagementAPI:
+    """
+    Wrapper class for interacting with the Omnia Industrial IIoT IMS Subscriptions Management API.
+    For more information, see https://github.com/equinor/OmniaPlant/wiki or consult with the Omnia IIoT team.
+
+    :param MsalCredential azure_credential: Azure credential instance used for authenticating
+    :param TimeseriesEnvironment environment: API deployment environment
+    """
+
+    def __init__(
+        self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
+    ):
+        if not isinstance(environment, TimeseriesEnvironment):
+            raise TypeError(f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}")
+        apiEnvironment=IMSSubscriptionsManagementAPIEnvironment(environment)
+        self._http_client = HttpClient(
+            azure_credential=azure_credential, resource_id=apiEnvironment.resource_id
+        )
+        self._base_url = apiEnvironment.base_url.rstrip("/")
+
+    def get_subscription_counter_by_system_code(
+        self,
+        systemCode: str,
+        **kwargs,
+    ) -> SubscriptionCounterModel:
+        """
+        Search IMS Subscriptions Management API
+        """
+        params = kwargs or {}
+        url = (
+            f"{self._base_url}/{systemCode}/counter"
+        )
+        return self._http_client.request(request_type="get", url=url, params=params)
+
+    def patch_subscription_by_uid(
+        self,
+        uid: str,
+        request: SubscriptionPatchRequestItem
+    ) -> GetIMSMetadataResponseModel:
+        """
+        Search IMS Subscriptions Management API
+        """
+        url = (
+            f"{self._base_url}/uid/{uid}"
+        )
+        return self._http_client.request(request_type="patch", url=url, payload=request)
 
 class TimeseriesAPI:
     """
@@ -103,12 +404,15 @@ class TimeseriesAPI:
     """
 
     def __init__(
-        self, azure_credential: MsalCredential, environment: TimeseriesEnvironment
+        self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
     ):
+        if not isinstance(environment, TimeseriesEnvironment):
+            raise TypeError(f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}")
+        apiEnvironment=TimeseriesApiEnvironment(environment)
         self._http_client = HttpClient(
-            azure_credential=azure_credential, resource_id=environment.resource_id
+            azure_credential=azure_credential, resource_id=apiEnvironment.resource_id
         )
-        self._base_url = environment.base_url.rstrip("/")
+        self._base_url = apiEnvironment.base_url.rstrip("/")
 
     def write_data(
         self,

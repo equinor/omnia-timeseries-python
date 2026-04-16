@@ -78,6 +78,36 @@ class GetAggregatesResponseModel(TypedDict):
     count: Optional[int]
     continuationToken: Optional[str]
 
+class IMSMetadataModel(TypedDict):
+    id: str
+    uid: str
+    imsType: str
+    systemCode: str
+    recordId: bool
+    plantSapCode: str
+    plantStidCode: str
+    tag: str
+    terminal: str
+    isDefaultTerminal: str
+    description: str
+    engUnits: str
+    standardUnit: str
+    source: str
+    type: str
+    sourceTag: str
+    stepped: str
+    changeDate: str
+    creationDate: str
+    currentValueDate: str
+    compressed: str
+    compressionDeviation: str
+    compressionMaximum: str
+    compressionMinimum: str
+    compressionDeviationPercent: str
+    plantArea: str
+    significantDigit: str
+    maxTimeInterval: str
+    fieldId: str
 
 class TimeseriesModel(TypedDict):
     id: str
@@ -93,16 +123,21 @@ class TimeseriesModel(TypedDict):
     source: str
     metadata: Optional[Dict[str, Any]]
 
+class IMSMetadataItemsModel(TypedDict):
+    items: List[IMSMetadataModel]
 
 class TimeseriesItemsModel(TypedDict):
     items: List[TimeseriesModel]
 
+class GetIMSMetadataResponseModel(TypedDict):
+    data: IMSMetadataItemsModel
+    count: Optional[int]
+    continuationToken: Optional[str]
 
 class GetTimeseriesResponseModel(TypedDict):
     data: TimeseriesItemsModel
     count: Optional[int]
     continuationToken: Optional[str]
-
 
 class TimeseriesRequestItem(TypedDict, total=False):
     name: str
@@ -125,6 +160,13 @@ class TimeseriesPatchRequestItem(TypedDict, total=False):
     externalId: Optional[str]
     metadata: Optional[Dict[str, Any]]
 
+class SubscriptionPatchRequestItem(TypedDict, total=False):
+    name: Optional[str]
+    plantStidCode: Optional[str]
+    plantSapCode: Optional[bool]
+    terminal: Optional[str]
+    fieldId: Optional[str]
+    timeseriesId: Optional[str]
 
 class FacilityModel(TypedDict):
     facility: str
@@ -182,6 +224,9 @@ class StreamSubscriptionItemsModel(TypedDict):
 class StreamSubscriptionDataModel(TypedDict):
     data: StreamSubscriptionItemsModel
 
+class SubscriptionCounterModel(TypedDict):
+    quota: int
+    count: int
 
 class TimeseriesRequestFailedException(Exception):
     def __init__(self, response: Response) -> None:
@@ -212,5 +257,5 @@ class TimeseriesRequestFailedException(Exception):
         return self._message
 
     @property
-    def trace_id(self) -> str:
+    def trace_id(self) -> Optional[str]:
         return self._trace_id

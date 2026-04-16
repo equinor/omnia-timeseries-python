@@ -1,5 +1,6 @@
-from typing import Literal, List, Optional, Union, Dict, Any
+from typing import Literal, List, Optional, Union, Dict, Any, Mapping, Sequence
 from azure.identity._internal.msal_credentials import MsalCredential
+from azure.core.credentials import TokenCredential
 import requests
 import logging
 
@@ -31,8 +32,8 @@ def _request(
     request_type: RequestType,
     url: str,
     headers: Dict[str, Any],
-    payload: Optional[Union[Dict, Dict, List]] = None,
-    params: Optional[Dict[str, Any]] = None,
+    payload: Optional[Mapping[str, Any] | Sequence[Any]] = None,
+    params: Optional[Mapping[str, Any]] = None,
 ) -> Union[Dict[str, Any], bytes]:
 
     response = requests.request(
@@ -47,7 +48,7 @@ def _request(
 
 
 class HttpClient:
-    def __init__(self, azure_credential: MsalCredential, resource_id: str):
+    def __init__(self, azure_credential: TokenCredential, resource_id: str):
         self._azure_credential = azure_credential
         self._resource_id = resource_id
 
@@ -56,8 +57,8 @@ class HttpClient:
         request_type: RequestType,
         url: str,
         accept: ContentType = "application/json",
-        payload: Optional[Union[Dict, Dict, List]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        payload: Optional[Mapping[str, Any] | Sequence[Any]] = None,
+        params: Optional[Mapping[str, Any]] = None,
     ) -> Any:
 
         access_token = self._azure_credential.get_token(
