@@ -1,24 +1,19 @@
 import requests_mock
 import pytest
-from azure.identity._internal.msal_credentials import MsalCredential
 from azure.core.credentials import AccessToken
 from omnia_timeseries import TimeseriesAPI, TimeseriesEnvironment
 from omnia_timeseries.http_client import TimeseriesRequestFailedException
 
-
-class DummyCredentials(MsalCredential):
-
-    def get_token(self, *scopes, **kwargs):
+class DummyCredentials:
+    def get_token(self, *scopes: str, **kwargs) -> AccessToken:
         return AccessToken("dummytoken", 0)
-
-    def _get_app(self):
-        return None
 
 
 @pytest.fixture
 def api():
-    env = TimeseriesEnvironment("dummy", "https://test")
-    api = TimeseriesAPI(DummyCredentials("dummy"), env)
+    env = TimeseriesEnvironment.Dev()
+    api = TimeseriesAPI(azure_credential=DummyCredentials(), environment=env)
+    api._base_url = "https://test"
     return api
 
 
