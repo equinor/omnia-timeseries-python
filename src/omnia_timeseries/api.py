@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional
-from typing_extensions import Self # Python 3.8 compatible
 from azure.core.credentials import TokenCredential
 from omnia_timeseries.http_client import HttpClient, ContentType
 from omnia_timeseries.models import (
@@ -62,21 +61,21 @@ class TimeseriesEnvironment:
     kind: Environment
 
     @classmethod
-    def Dev(cls) -> Self:
+    def Dev(cls) -> "TimeseriesEnvironment":
         """
         Set non-production dev environment
         """
         return cls(kind=Environment.Dev)
 
     @classmethod
-    def Test(cls) -> Self:
+    def Test(cls) -> "TimeseriesEnvironment":
         """
         Set non-production test environment
         """
         return cls(kind=Environment.Test)
 
     @classmethod
-    def Prod(cls) -> Self:
+    def Prod(cls) -> "TimeseriesEnvironment":
         """
         Set production environment
         """
@@ -310,7 +309,7 @@ class IMSSubscriptionsAPI:
         if continuationToken is not None:
             params["continuationToken"] = continuationToken
         url = (
-            f"{self._base_url}/uid"
+            f"{self._base_url}/uid/{uid}"
         )
         return self._http_client.request(request_type="get", url=url, params=params)
 
@@ -329,7 +328,7 @@ class IMSSubscriptionsAPI:
         if continuationToken is not None:
             params["continuationToken"] = continuationToken
         url = (
-            f"{self._base_url}/timeseriesId"
+            f"{self._base_url}/timeseriesId/{timeseriesId}"
         )
         return self._http_client.request(request_type="get", url=url, params=params)
 
