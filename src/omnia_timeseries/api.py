@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Literal, Optional
-from azure.identity._internal.msal_credentials import MsalCredential
+from azure.core.credentials import TokenCredential
 from omnia_timeseries.http_client import HttpClient, ContentType
 from omnia_timeseries.models import (
     DatapointModel,
@@ -103,7 +103,7 @@ class TimeseriesAPI:
     """
 
     def __init__(
-        self, azure_credential: MsalCredential, environment: TimeseriesEnvironment
+        self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
     ):
         self._http_client = HttpClient(
             azure_credential=azure_credential, resource_id=environment.resource_id

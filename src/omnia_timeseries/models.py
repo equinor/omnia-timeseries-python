@@ -212,5 +212,5 @@ class TimeseriesRequestFailedException(Exception):
         return self._message
 
     @property
-    def trace_id(self) -> str:
+    def trace_id(self) -> Optional[str]:
         return self._trace_id
