@@ -78,13 +78,6 @@ class GetAggregatesResponseModel(TypedDict):
     count: Optional[int]
     continuationToken: Optional[str]
 
-class IMSMetadataItemsModel(TypedDict):
-    items: List[IMSMetadataModel]
-
-class GetIMSMetadataResponseModel(TypedDict):
-    data: IMSMetadataItemsModel
-    count: Optional[int]
-    continuationToken: Optional[str]
 
 class IMSMetadataModel(TypedDict):
     id: str
@@ -116,6 +109,14 @@ class IMSMetadataModel(TypedDict):
     significantDigit: str
     maxTimeInterval: str
     fieldId: str
+
+class IMSMetadataItemsModel(TypedDict):
+    items: List[IMSMetadataModel]
+
+class GetIMSMetadataResponseModel(TypedDict):
+    data: IMSMetadataItemsModel
+    count: Optional[int]
+    continuationToken: Optional[str]
 
 class TimeseriesModel(TypedDict):
     id: str
