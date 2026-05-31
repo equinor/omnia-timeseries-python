@@ -29,13 +29,9 @@ def retry(
                     if e.status_code in retry_status_codes:
                         if logger is not None:
                             if _tries == 0:
-                                msg = str(
-                                    f"Function: {f.__name__} Failed despite best efforts after {total_tries} tries."
-                                )
+                                msg = f"Function: {f.__name__} Failed despite best efforts after {total_tries} tries."
                             else:
-                                msg = str(
-                                    f"Function: {f.__name__} failed with {e}. Retrying in {_delay} seconds, with {_tries} retries remaining!\n"
-                                )
+                                msg = f"Function: {f.__name__} failed with {e}. Retrying in {_delay} seconds, with {_tries} retries remaining!"
                             logger.warning(msg)
                         time.sleep(_delay)
                         _delay *= backoff_factor
