@@ -22,7 +22,7 @@ def api():
 
 
 @pytest.fixture
-def ims_sub_mgmt_api():
+def imssubscriptionsmanagementapi():
     env = TimeseriesEnvironment.Dev()
     api = IMSSubscriptionsManagementAPI(
         azure_credential=DummyCredentials(),
@@ -135,7 +135,9 @@ def should_include_debug_query_param_when_debug_mode_is_enabled(api):
         )
 
 
-def should_patch_subscription_by_uid_with_state_fields_only(ims_sub_mgmt_api):
+def should_patch_subscription_by_uid_with_state_fields_only(
+    imssubscriptionsmanagementapi,
+):
     payload = {
         "tsdbEventsExported": 0,
         "tsdbFirstExportedTime": None,
@@ -154,7 +156,7 @@ def should_patch_subscription_by_uid_with_state_fields_only(ims_sub_mgmt_api):
             json={"data": {"items": []}, "count": 0},
         )
 
-        response = ims_sub_mgmt_api.patch_subscription_by_uid(
+        response = imssubscriptionsmanagementapi.patch_subscription_by_uid(
             uid="sub-123",
             request=payload,
         )
@@ -166,7 +168,9 @@ def should_patch_subscription_by_uid_with_state_fields_only(ims_sub_mgmt_api):
         assert response["count"] == 0
 
 
-def should_patch_subscription_by_uid_with_subscription_and_state_fields(ims_sub_mgmt_api):
+def should_patch_subscription_by_uid_with_subscription_and_state_fields(
+    imssubscriptionsmanagementapi,
+):
     payload = {
         "plantStidCode": "asdf-1234",
         "plantSapCode": "1234",
@@ -187,7 +191,7 @@ def should_patch_subscription_by_uid_with_subscription_and_state_fields(ims_sub_
             json={"data": {"items": []}, "count": 0},
         )
 
-        response = ims_sub_mgmt_api.patch_subscription_by_uid(
+        response = imssubscriptionsmanagementapi.patch_subscription_by_uid(
             uid="sub-123",
             request=payload,
         )
@@ -200,7 +204,7 @@ def should_patch_subscription_by_uid_with_subscription_and_state_fields(ims_sub_
 
 
 def should_raise_on_patch_subscription_by_uid_when_api_returns_400(
-    ims_sub_mgmt_api,
+    imssubscriptionsmanagementapi,
 ):
     payload = {
         "tsdbEventsExported": 1,
@@ -216,7 +220,7 @@ def should_raise_on_patch_subscription_by_uid_when_api_returns_400(
         )
 
         with pytest.raises(TimeseriesRequestFailedException) as exc:
-            ims_sub_mgmt_api.patch_subscription_by_uid(
+            imssubscriptionsmanagementapi.patch_subscription_by_uid(
                 uid="sub-123",
                 request=payload,
             )
