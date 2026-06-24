@@ -166,7 +166,7 @@ def should_patch_subscription_by_uid_with_state_fields_only(ims_sub_mgmt_api):
         assert response["count"] == 0
 
 
-def should_patch_subscription_by_uid_with_complete_model(ims_sub_mgmt_api):
+def should_patch_subscription_by_uid_with_subscription_and_state_fields(ims_sub_mgmt_api):
     payload = {
         "plantStidCode": "asdf-1234",
         "plantSapCode": "1234",
