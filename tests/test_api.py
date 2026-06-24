@@ -198,3 +198,30 @@ def should_patch_subscription_by_uid_with_complete_model(ims_sub_mgmt_api):
         assert request.method == "PATCH"
         assert json.loads(request.text) == payload
         assert response["count"] == 0
+
+
+def should_fail_patch_subscription_by_uid_when_payload_has_disallowed_field(
+    ims_sub_mgmt_api,
+):
+    payload = {
+        "tsdbEventsExported": 1,
+        "notAllowedField": "boom",  # not part of SubscriptionPatchRequestItem
+    }
+
+    with requests_mock.Mocker() as m:
+        m.register_uri(
+            "PATCH",
+            "https://test/uid/sub-123",
+            status_code=400,
+            text='{"message":"Invalid field: notAllowedField","traceId":"trace-1"}',
+        )
+
+        with pytest.raises(TimeseriesRequestFailedException) as exc:
+            ims_sub_mgmt_api.patch_subscription_by_uid(
+                uid="sub-123",
+                request=payload,
+            )
+
+        assert m.call_count == 1
+        assert exc.value.status_code == 400
+        assert "Invalid field" in exc.value.message
