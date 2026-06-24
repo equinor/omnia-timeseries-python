@@ -199,12 +199,12 @@ def should_patch_subscription_by_uid_with_subscription_and_state_fields(ims_sub_
         assert response["count"] == 0
 
 
-def should_fail_patch_subscription_by_uid_when_payload_has_disallowed_field(
+def should_raise_on_patch_subscription_by_uid_when_api_returns_400(
     ims_sub_mgmt_api,
 ):
     payload = {
         "tsdbEventsExported": 1,
-        "notAllowedField": "boom",  # not part of SubscriptionPatchRequestItem
+        "notAllowedField": "boom",  # field intentionally unknown; API returns 400
     }
 
     with requests_mock.Mocker() as m:
