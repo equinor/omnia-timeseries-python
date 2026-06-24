@@ -110,13 +110,16 @@ class IMSMetadataModel(TypedDict):
     maxTimeInterval: str
     fieldId: str
 
+
 class IMSMetadataItemsModel(TypedDict):
     items: List[IMSMetadataModel]
+
 
 class GetIMSMetadataResponseModel(TypedDict):
     data: IMSMetadataItemsModel
     count: Optional[int]
     continuationToken: Optional[str]
+
 
 class TimeseriesModel(TypedDict):
     id: str
@@ -142,13 +145,30 @@ class GetTimeseriesResponseModel(TypedDict):
     count: Optional[int]
     continuationToken: Optional[str]
 
-class SubscriptionPatchRequestItem(TypedDict, total=False):
+
+class SubscriptionStatePatchModel(TypedDict, total=False):
+    tsdbBackfilled: Optional[bool]
+    tsdbEventsExported: Optional[int]
+    tsdbFirstExportedTime: Optional[str]
+    tsdbLastExportedTime: Optional[str]
+    dlBackfilled: Optional[bool]
+    dlEventsExported: Optional[int]
+    dlFirstExportedTime: Optional[str]
+    dlLastExportedTime: Optional[str]
+    dlParquetFirstExportedTime: Optional[str]
+    dlParquetLastExportedTime: Optional[str]
+    sourceFirstCountedTime: Optional[str]
+    sourceLastCountedTime: Optional[str]
+
+
+class SubscriptionPatchRequestItem(SubscriptionStatePatchModel, total=False):
     name: Optional[str]
     plantStidCode: Optional[str]
-    plantSapCode: Optional[bool]
+    plantSapCode: Optional[str]
     terminal: Optional[str]
     fieldId: Optional[str]
     timeseriesId: Optional[str]
+
 
 class TimeseriesRequestItem(TypedDict, total=False):
     name: str
@@ -228,9 +248,11 @@ class StreamSubscriptionItemsModel(TypedDict):
 class StreamSubscriptionDataModel(TypedDict):
     data: StreamSubscriptionItemsModel
 
+
 class SubscriptionCounterModel(TypedDict):
     quota: int
     count: int
+
 
 class TimeseriesRequestFailedException(Exception):
     def __init__(self, response: Response) -> None:
