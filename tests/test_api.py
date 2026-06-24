@@ -1,8 +1,13 @@
+import json
+from typing import Optional
+
 import requests_mock
 import pytest
 from azure.core.credentials import AccessToken
 from omnia_timeseries import TimeseriesAPI, TimeseriesEnvironment
+from omnia_timeseries.api import IMSSubscriptionsManagementAPI
 from omnia_timeseries.http_client import TimeseriesRequestFailedException
+
 
 class DummyCredentials:
     def get_token(self, *scopes: str, **kwargs) -> AccessToken:
@@ -13,6 +18,17 @@ class DummyCredentials:
 def api():
     env = TimeseriesEnvironment.Dev()
     api = TimeseriesAPI(azure_credential=DummyCredentials(), environment=env)
+    api._base_url = "https://test"
+    return api
+
+
+@pytest.fixture
+def ims_sub_mgmt_api():
+    env = TimeseriesEnvironment.Dev()
+    api = IMSSubscriptionsManagementAPI(
+        azure_credential=DummyCredentials(),
+        environment=env,
+    )
     api._base_url = "https://test"
     return api
 
@@ -84,9 +100,9 @@ def should_forward_align_to_cache_parameter_for_multi_datapoints(api):
         api.get_multi_datapoints([{"id": "series-1"}], alignToCache=True)
         assert m.call_count == 1, "Expected a single request"
         request = m.request_history[0]
-        assert request.qs.get("aligntocache") == [
-            "true"
-        ], "alignToCache should be forwarded"
+        assert request.qs.get("aligntocache") == ["true"], (
+            "alignToCache should be forwarded"
+        )
 
 
 def should_forward_align_to_cache_parameter_for_get_aggregates(api):
@@ -99,9 +115,9 @@ def should_forward_align_to_cache_parameter_for_get_aggregates(api):
         api.get_aggregates("1234", ["avg"], alignToCache=False)
         assert m.call_count == 1, "Expected a single request"
         request = m.request_history[0]
-        assert request.qs.get("aligntocache") == [
-            "false"
-        ], "alignToCache should be forwarded as false"
+        assert request.qs.get("aligntocache") == ["false"], (
+            "alignToCache should be forwarded as false"
+        )
 
 
 def should_include_debug_query_param_when_debug_mode_is_enabled(api):
@@ -115,6 +131,70 @@ def should_include_debug_query_param_when_debug_mode_is_enabled(api):
         api.get_multi_datapoints([{"id": "series-1"}])
         assert m.call_count == 1, "Expected a single request"
         request = m.request_history[0]
-        assert request.qs.get("debug") == [
-            "true"
-        ], "Debug mode should inject debug=true"
+        assert request.qs.get("debug") == ["true"], (
+            "Debug mode should inject debug=true"
+        )
+
+
+def should_patch_subscription_by_uid_with_state_fields_only(ims_sub_mgmt_api):
+    payload = {
+        "tsdbEventsExported": 0,
+        "tsdbFirstExportedTime": None,
+        "tsdbLastExportedTime": None,
+        "dlEventsExported": 0,
+        "dlFirstExportedTime": None,
+        "dlLastExportedTime": None,
+        "sourceFirstCountedTime": None,
+        "sourceLastCountedTime": None,
+    }
+
+    with requests_mock.Mocker() as m:
+        m.register_uri(
+            "PATCH",
+            "https://test/uid/sub-123",
+            json={"data": {"items": []}, "count": 0},
+        )
+
+        response = ims_sub_mgmt_api.patch_subscription_by_uid(
+            uid="sub-123",
+            request=payload,
+        )
+
+        assert m.call_count == 1
+        request = m.request_history[0]
+        assert request.method == "PATCH"
+        assert json.loads(request.text) == payload
+        assert response["count"] == 0
+
+
+def should_patch_subscription_by_uid_with_complete_model(ims_sub_mgmt_api):
+    payload = {
+        "plantStidCode": "asdf-1234",
+        "plantSapCode": "1234",
+        "tsdbEventsExported": 0,
+        "tsdbFirstExportedTime": None,
+        "tsdbLastExportedTime": None,
+        "dlEventsExported": 0,
+        "dlFirstExportedTime": None,
+        "dlLastExportedTime": None,
+        "sourceFirstCountedTime": None,
+        "sourceLastCountedTime": None,
+    }
+
+    with requests_mock.Mocker() as m:
+        m.register_uri(
+            "PATCH",
+            "https://test/uid/sub-123",
+            json={"data": {"items": []}, "count": 0},
+        )
+
+        response = ims_sub_mgmt_api.patch_subscription_by_uid(
+            uid="sub-123",
+            request=payload,
+        )
+
+        assert m.call_count == 1
+        request = m.request_history[0]
+        assert request.method == "PATCH"
+        assert json.loads(request.text) == payload
+        assert response["count"] == 0
