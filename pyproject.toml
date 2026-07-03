@@ -10,17 +10,17 @@ repository = "https://github.com/equinor/omnia-timeseries-python"
 documentation = "https://github.com/equinor/omnia-timeseries-python/blob/main/README.md"
 keywords = ["omnia", "timeseries", "azure", "sdk", "industrial-iot"]
 classifiers = [
-	"Development Status :: 5 - Production/Stable",
-	"Intended Audience :: Developers",
-	"License :: OSI Approved :: MIT License",
-	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.8",
-	"Programming Language :: Python :: 3.9",
-	"Programming Language :: Python :: 3.10",
-	"Programming Language :: Python :: 3.11",
-	"Programming Language :: Python :: 3.12",
-	"Programming Language :: Python :: 3.13",
-	"Topic :: Software Development :: Libraries :: Python Modules",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 packages = [{ include = "omnia_timeseries", from = "src" }]
 
