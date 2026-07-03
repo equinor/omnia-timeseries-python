@@ -2,8 +2,6 @@ name: Publish Python Package
 
 'on':
   push:
-    branches:
-      - feature/make-ready-for-publish-on-pypi
     tags:
       - v*
   workflow_dispatch:
@@ -45,9 +43,7 @@ jobs:
           path: dist/
 
   publish-testpypi:
-    if: |
-        (github.event_name == 'workflow_dispatch' && inputs.publish_to_testpypi) ||
-        (github.event_name == 'push' && github.ref == 'refs/heads/feature/make-ready-for-publish-on-pypi')
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_to_testpypi
     runs-on: ubuntu-latest
     needs: build
     permissions:
