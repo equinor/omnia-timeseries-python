@@ -2,6 +2,8 @@ name: Publish Python Package
 
 'on':
   push:
+    branches:
+      - feature/make-ready-for-publish-on-pypi
     tags:
       - v*
   workflow_dispatch:
