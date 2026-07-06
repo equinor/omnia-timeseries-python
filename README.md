@@ -16,7 +16,7 @@ Install from GitHub (latest unreleased changes):
 pip install git+https://github.com/equinor/omnia-timeseries-python.git@main
 ```
 
-Supported Python versions: >=3.10
+Supported Python versions: 3.10+
 
 For support, create an issue on GitHub.
 
