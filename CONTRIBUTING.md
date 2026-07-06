@@ -20,6 +20,21 @@ Here are some resources to help you get started with open source contributions:
 * Create a PR
 * Code review
 
+### Run tests
+
+Run tests from the project root.
+
+1. Install dependencies:
+    - `poetry install`
+2. Run all tests:
+    - `poetry run pytest`
+3. Run a single test file (optional):
+    - `poetry run pytest tests/test_api.py`
+4. Run a single test case by name (optional):
+    - `poetry run pytest -k "test_name"`
+
+Before opening a PR, ensure tests pass locally.
+
 ### Release and versioning
 
 Follow the steps below for any release that is intended for PyPI.
