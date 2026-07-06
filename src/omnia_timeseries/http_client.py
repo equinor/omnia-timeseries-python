@@ -1,4 +1,4 @@
-from typing import Literal, List, Optional, Union, Dict, Any, Mapping, Sequence
+from typing import Literal, Optional, Dict, Any, Mapping, Sequence
 from azure.core.credentials import TokenCredential
 import requests
 import logging
@@ -31,9 +31,9 @@ def _request(
     request_type: RequestType,
     url: str,
     headers: Dict[str, Any],
-    payload: Optional[Union[Mapping[str, Any], Sequence[Any]]] = None,
+    payload: Optional[Mapping[str, Any] | Sequence[Any]] = None,
     params: Optional[Mapping[str, Any]] = None,
-) -> Union[Dict[str, Any], bytes]:
+) -> Dict[str, Any] | bytes:
 
     response = requests.request(
         request_type, url, headers=headers, json=payload, params=params
@@ -56,7 +56,7 @@ class HttpClient:
         request_type: RequestType,
         url: str,
         accept: ContentType = "application/json",
-        payload: Optional[Union[Mapping[str, Any], Sequence[Any]]] = None,
+        payload: Optional[Mapping[str, Any] | Sequence[Any]] = None,
         params: Optional[Mapping[str, Any]] = None,
     ) -> Any:
 
