@@ -33,8 +33,9 @@ def retry(
                             else:
                                 msg = f"Function: {f.__name__} failed with {e}. Retrying in {_delay} seconds, with {_tries} retries remaining!"
                             logger.warning(msg)
-                        time.sleep(_delay)
-                        _delay *= backoff_factor
+                        if _tries > 0:
+                            time.sleep(_delay)
+                            _delay *= backoff_factor
                         exception = e
                     else:
                         if logger is not None:
