@@ -228,3 +228,29 @@ def should_raise_on_patch_subscription_by_uid_when_api_returns_400(
         assert m.call_count == 1
         assert exc.value.status_code == 400
         assert "Invalid field" in exc.value.message
+
+
+def should_patch_subscription_by_uid_reset_with_empty_payload(
+    imssubscriptionsmanagementapi,
+):
+    payload = {}
+    resetState = True
+
+    with requests_mock.Mocker() as m:
+        m.register_uri(
+            "PATCH",
+            "https://test/uid/sub-123",
+            json={"data": {"items": []}, "count": 0},
+        )
+
+        response = imssubscriptionsmanagementapi.patch_subscription_by_uid(
+            uid="sub-123",
+            request=payload,
+            resetState=resetState,
+        )
+
+        assert m.call_count == 1
+        request = m.request_history[0]
+        assert request.method == "PATCH"
+        assert json.loads(request.text) == payload
+        assert response["count"] == 0
