@@ -29,16 +29,16 @@ azure-identity = ">=1.19.0,<2.0.0"
 azure-core = ">=1.30.0,<2.0.0"
 opentelemetry-instrumentation-requests = ">=0.54b1,<1.0.0"
 opentelemetry-api = ">=1.27.0,<2.0.0"
-cryptography = ">=48.0.1,<49.0.0"
+cryptography = ">=48.0.1,<50.0.0"
 pyjwt = ">=2.9.0,<3.0.0"
 
 [tool.poetry.group.test.dependencies]
-pytest = ">=7.4.0,<9.0.0"
+pytest = ">=7.4.0,<10.0.0"
 requests-mock = ">=1.9.0,<2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3.0.0,<5.0.0"
-black = ">=22.0,<26.0"
+black = ">=22.0,<27.0"
 
 [tool.poetry.urls]
 repository = "https://github.com/equinor/omnia-timeseries-python"
