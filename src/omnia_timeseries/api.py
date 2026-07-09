@@ -416,7 +416,7 @@ class IMSSubscriptionsManagementAPI:
         resetState: Optional[bool] = None,
     ) -> GetIMSMetadataResponseModel:
         """
-        Search IMS Subscriptions Management API
+        Patch subscription by UID in IMS Subscriptions Management API
         """
         url = f"{self._base_url}/uid/{uid}"
         params = {}

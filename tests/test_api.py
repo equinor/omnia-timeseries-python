@@ -253,4 +253,5 @@ def should_patch_subscription_by_uid_reset_with_empty_payload(
         request = m.request_history[0]
         assert request.method == "PATCH"
         assert json.loads(request.text) == payload
+        assert request.qs.get("resetstate") == ["true"]
         assert response["count"] == 0
