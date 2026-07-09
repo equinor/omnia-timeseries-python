@@ -48,11 +48,13 @@ class FederationSource(Enum):
     TSDB = "TSDB"
     DataLake = "DataLake"
 
+
 # Internal enum to represent environment chosen by user via TimeseriesEnvironment
 class Environment(Enum):
     Dev = "dev"
     Test = "test"
     Prod = "prod"
+
 
 # User-facing, immutable token accepted by all APIs with Python v3.8 slots-like behaviour
 @dataclass(frozen=True)
@@ -81,8 +83,11 @@ class TimeseriesEnvironment:
         """
         return cls(kind=Environment.Prod)
 
+
 class IMSMetadataApiEnvironment:
-    def __init__(self, environment: TimeseriesEnvironment, version: IMSMetadataVersion = "1.3"):
+    def __init__(
+        self, environment: TimeseriesEnvironment, version: IMSMetadataVersion = "1.3"
+    ):
         """
         Wrapper class for defining which environment the IMS Metadata API client will interface to
 
@@ -92,15 +97,21 @@ class IMSMetadataApiEnvironment:
         # Prepare API connection details
         if environment.kind is Environment.Dev:
             self._resource_id = "310547f5-022b-4fb5-b13e-2b468b8bf658"
-            self._base_url = f"https://api-dev.gateway.equinor.com/plant/ims-metadata/v{version}"
+            self._base_url = (
+                f"https://api-dev.gateway.equinor.com/plant/ims-metadata/v{version}"
+            )
 
         if environment.kind is Environment.Test:
             self._resource_id = "310547f5-022b-4fb5-b13e-2b468b8bf658"
-            self._base_url = f"https://api-test.gateway.equinor.com/plant/ims-metadata/v{version}"
+            self._base_url = (
+                f"https://api-test.gateway.equinor.com/plant/ims-metadata/v{version}"
+            )
 
         if environment.kind is Environment.Prod:
             self._resource_id = "71415e4e-7131-4a81-9596-f921978cdbee"
-            self._base_url = f"https://api.gateway.equinor.com/plant/ims-metadata/v{version}"
+            self._base_url = (
+                f"https://api.gateway.equinor.com/plant/ims-metadata/v{version}"
+            )
 
         # Safeguard in case of new, unsupported environment
         if not hasattr(self, "_resource_id") or not hasattr(self, "_base_url"):
@@ -114,8 +125,13 @@ class IMSMetadataApiEnvironment:
     def base_url(self) -> str:
         return self._base_url
 
+
 class IMSSubscriptionsAPIEnvironment:
-    def __init__(self, environment: TimeseriesEnvironment, version: IMSSubscriptionsVersion = "1.2"):
+    def __init__(
+        self,
+        environment: TimeseriesEnvironment,
+        version: IMSSubscriptionsVersion = "1.2",
+    ):
         """
         Wrapper class for defining which environment the IMS Subscriptions API client will interface to
 
@@ -133,7 +149,9 @@ class IMSSubscriptionsAPIEnvironment:
 
         if environment.kind is Environment.Prod:
             self._resource_id = "cae23674-f25d-40a2-b9e4-81649b33b957"
-            self._base_url = f"https://api.gateway.equinor.com/plant/ims-subscriptions/v{version}"
+            self._base_url = (
+                f"https://api.gateway.equinor.com/plant/ims-subscriptions/v{version}"
+            )
 
         # Safeguard in case of new, unsupported environment
         if not hasattr(self, "_resource_id") or not hasattr(self, "_base_url"):
@@ -147,8 +165,13 @@ class IMSSubscriptionsAPIEnvironment:
     def base_url(self) -> str:
         return self._base_url
 
+
 class IMSSubscriptionsManagementAPIEnvironment:
-    def __init__(self, environment: TimeseriesEnvironment, version: IMSSubscriptionsVersion = "1.2"):
+    def __init__(
+        self,
+        environment: TimeseriesEnvironment,
+        version: IMSSubscriptionsVersion = "1.2",
+    ):
         """
         Wrapper class for defining which environment the IMS Subscriptions Management API client will interface to
 
@@ -180,8 +203,11 @@ class IMSSubscriptionsManagementAPIEnvironment:
     def base_url(self) -> str:
         return self._base_url
 
+
 class TimeseriesApiEnvironment:
-    def __init__(self, environment: TimeseriesEnvironment, version: TimeseriesVersion = "1.7"):
+    def __init__(
+        self, environment: TimeseriesEnvironment, version: TimeseriesVersion = "1.7"
+    ):
         """
         Wrapper class for defining which environment the Timeseries API client will interface to
 
@@ -191,15 +217,21 @@ class TimeseriesApiEnvironment:
         # Prepare API connection details
         if environment.kind is Environment.Dev:
             self._resource_id = "32f2a909-8a98-4eb8-b22d-1208d9350cb0"
-            self._base_url = f"https://api-dev.gateway.equinor.com/plant/timeseries/v{version}"
+            self._base_url = (
+                f"https://api-dev.gateway.equinor.com/plant/timeseries/v{version}"
+            )
 
         if environment.kind is Environment.Test:
             self._resource_id = "32f2a909-8a98-4eb8-b22d-1208d9350cb0"
-            self._base_url = f"https://api-test.gateway.equinor.com/plant/timeseries/v{version}"
+            self._base_url = (
+                f"https://api-test.gateway.equinor.com/plant/timeseries/v{version}"
+            )
 
         if environment.kind is Environment.Prod:
             self._resource_id = "141369bd-3dca-4b55-825b-56ad4a69b1fc"
-            self._base_url = f"https://api.gateway.equinor.com/plant/timeseries/v{version}"
+            self._base_url = (
+                f"https://api.gateway.equinor.com/plant/timeseries/v{version}"
+            )
 
         # Safeguard in case of new, unsupported environment
         if not hasattr(self, "_resource_id") or not hasattr(self, "_base_url"):
@@ -212,6 +244,7 @@ class TimeseriesApiEnvironment:
     @property
     def base_url(self) -> str:
         return self._base_url
+
 
 class IMSMetadataAPI:
     """
@@ -226,8 +259,10 @@ class IMSMetadataAPI:
         self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
     ):
         if not isinstance(environment, TimeseriesEnvironment):
-            raise TypeError(f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}")
-        apiEnvironment=IMSMetadataApiEnvironment(environment)
+            raise TypeError(
+                f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}"
+            )
+        apiEnvironment = IMSMetadataApiEnvironment(environment)
         self._http_client = HttpClient(
             azure_credential=azure_credential, resource_id=apiEnvironment.resource_id
         )
@@ -250,10 +285,9 @@ class IMSMetadataAPI:
             params["uid"] = uid
         if continuationToken is not None:
             params["continuationToken"] = continuationToken
-        url = (
-            f"{self._base_url}/search"
-        )
+        url = f"{self._base_url}/search"
         return self._http_client.request(request_type="get", url=url, params=params)
+
 
 class IMSSubscriptionsAPI:
     """
@@ -268,8 +302,10 @@ class IMSSubscriptionsAPI:
         self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
     ):
         if not isinstance(environment, TimeseriesEnvironment):
-            raise TypeError(f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}")
-        apiEnvironment=IMSSubscriptionsAPIEnvironment(environment)
+            raise TypeError(
+                f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}"
+            )
+        apiEnvironment = IMSSubscriptionsAPIEnvironment(environment)
         self._http_client = HttpClient(
             azure_credential=azure_credential, resource_id=apiEnvironment.resource_id
         )
@@ -289,9 +325,7 @@ class IMSSubscriptionsAPI:
             params["limit"] = limit
         if continuationToken is not None:
             params["continuationToken"] = continuationToken
-        url = (
-            f"{self._base_url}"
-        )
+        url = f"{self._base_url}"
         return self._http_client.request(request_type="get", url=url, params=params)
 
     def search_by_uid(
@@ -308,9 +342,7 @@ class IMSSubscriptionsAPI:
             params["uid"] = uid
         if continuationToken is not None:
             params["continuationToken"] = continuationToken
-        url = (
-            f"{self._base_url}/uid/{uid}"
-        )
+        url = f"{self._base_url}/uid/{uid}"
         return self._http_client.request(request_type="get", url=url, params=params)
 
     def search_by_timeseries_id(
@@ -327,9 +359,7 @@ class IMSSubscriptionsAPI:
             params["timeseriesId"] = timeseriesId
         if continuationToken is not None:
             params["continuationToken"] = continuationToken
-        url = (
-            f"{self._base_url}/timeseriesId/{timeseriesId}"
-        )
+        url = f"{self._base_url}/timeseriesId/{timeseriesId}"
         return self._http_client.request(request_type="get", url=url, params=params)
 
     def search_by_system_code(
@@ -341,10 +371,9 @@ class IMSSubscriptionsAPI:
         Search IMS Subscriptions API
         """
         params = kwargs or {}
-        url = (
-            f"{self._base_url}/{systemCode}"
-        )
+        url = f"{self._base_url}/{systemCode}"
         return self._http_client.request(request_type="get", url=url, params=params)
+
 
 class IMSSubscriptionsManagementAPI:
     """
@@ -359,8 +388,10 @@ class IMSSubscriptionsManagementAPI:
         self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
     ):
         if not isinstance(environment, TimeseriesEnvironment):
-            raise TypeError(f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}")
-        apiEnvironment=IMSSubscriptionsManagementAPIEnvironment(environment)
+            raise TypeError(
+                f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}"
+            )
+        apiEnvironment = IMSSubscriptionsManagementAPIEnvironment(environment)
         self._http_client = HttpClient(
             azure_credential=azure_credential, resource_id=apiEnvironment.resource_id
         )
@@ -375,23 +406,26 @@ class IMSSubscriptionsManagementAPI:
         Search IMS Subscriptions Management API
         """
         params = kwargs or {}
-        url = (
-            f"{self._base_url}/{systemCode}/counter"
-        )
+        url = f"{self._base_url}/{systemCode}/counter"
         return self._http_client.request(request_type="get", url=url, params=params)
 
     def patch_subscription_by_uid(
         self,
         uid: str,
-        request: SubscriptionPatchRequestItem
+        request: Optional[SubscriptionPatchRequestItem] = None,
+        resetState: Optional[bool] = None,
     ) -> GetIMSMetadataResponseModel:
         """
-        Search IMS Subscriptions Management API
+        Patch subscription by UID in IMS Subscriptions Management API
         """
-        url = (
-            f"{self._base_url}/uid/{uid}"
+        url = f"{self._base_url}/uid/{uid}"
+        params = {}
+        if resetState is not None:
+            params["resetState"] = resetState
+        return self._http_client.request(
+            request_type="patch", url=url, params=params, payload=request
         )
-        return self._http_client.request(request_type="patch", url=url, payload=request)
+
 
 class TimeseriesAPI:
     """
@@ -406,8 +440,10 @@ class TimeseriesAPI:
         self, azure_credential: TokenCredential, environment: TimeseriesEnvironment
     ):
         if not isinstance(environment, TimeseriesEnvironment):
-            raise TypeError(f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}")
-        apiEnvironment=TimeseriesApiEnvironment(environment)
+            raise TypeError(
+                f"Environment must be TimeseriesEnvironment, got: {type(environment).__name__}"
+            )
+        apiEnvironment = TimeseriesApiEnvironment(environment)
         self._http_client = HttpClient(
             azure_credential=azure_credential, resource_id=apiEnvironment.resource_id
         )
