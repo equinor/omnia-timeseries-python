@@ -1,6 +1,7 @@
 from typing import Literal, Optional, Dict, Any, Mapping, Sequence
 from azure.core.credentials import TokenCredential
 import requests
+from requests.adapters import HTTPAdapter
 import logging
 
 from omnia_timeseries.helpers import retry
@@ -15,6 +16,9 @@ ContentType = Literal[
 
 RequestType = Literal["get", "put", "post", "patch", "delete"]
 
+# Connections kept alive per host for moderately concurrent callers.
+DEFAULT_POOL_SIZE = 32
+
 logger = logging.getLogger(__name__)
 version = metadata.version("omnia_timeseries")
 system_version_string = (
@@ -28,6 +32,7 @@ RequestsInstrumentor().instrument()
 
 @retry(logger=logger)
 def _request(
+    session: requests.Session,
     request_type: RequestType,
     url: str,
     headers: Dict[str, Any],
@@ -35,7 +40,7 @@ def _request(
     params: Optional[Mapping[str, Any]] = None,
 ) -> Dict[str, Any] | bytes:
 
-    response = requests.request(
+    response = session.request(
         request_type, url, headers=headers, json=payload, params=params
     )
     if not response.ok:
@@ -47,9 +52,27 @@ def _request(
 
 
 class HttpClient:
-    def __init__(self, azure_credential: TokenCredential, resource_id: str):
+    def __init__(
+        self,
+        azure_credential: TokenCredential,
+        resource_id: str,
+        pool_size: int = DEFAULT_POOL_SIZE,
+    ):
         self._azure_credential = azure_credential
         self._resource_id = resource_id
+        self._session = requests.Session()
+        adapter = HTTPAdapter(pool_connections=pool_size, pool_maxsize=pool_size)
+        self._session.mount("https://", adapter)
+        self._session.mount("http://", adapter)
+
+    def close(self) -> None:
+        self._session.close()
+
+    def __enter__(self) -> "HttpClient":
+        return self
+
+    def __exit__(self, *exc_info: Any) -> None:
+        self.close()
 
     def request(
         self,
@@ -70,6 +93,7 @@ class HttpClient:
             "User-Agent": f"Omnia Timeseries SDK/{version} {system_version_string}",
         }
         return _request(
+            session=self._session,
             request_type=request_type,
             url=url,
             headers=headers,

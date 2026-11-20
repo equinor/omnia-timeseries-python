@@ -5,7 +5,10 @@ import pytest
 from azure.core.credentials import AccessToken
 from omnia_timeseries import TimeseriesAPI, TimeseriesEnvironment
 from omnia_timeseries.api import IMSSubscriptionsManagementAPI
-from omnia_timeseries.http_client import TimeseriesRequestFailedException
+from omnia_timeseries.http_client import (
+    DEFAULT_POOL_SIZE,
+    TimeseriesRequestFailedException,
+)
 
 
 class DummyCredentials:
@@ -255,3 +258,17 @@ def should_patch_subscription_by_uid_reset_with_empty_payload(
         assert json.loads(request.text) == payload
         assert request.qs.get("resetstate") == ["true"]
         assert response["count"] == 0
+
+
+def should_pool_connections_in_shared_session(api):
+    adapter = api._http_client._session.get_adapter("https://test")
+    assert adapter._pool_maxsize == DEFAULT_POOL_SIZE
+    assert adapter._pool_connections == DEFAULT_POOL_SIZE
+
+
+def should_close_session_when_http_client_context_exits(api, monkeypatch):
+    closed = []
+    monkeypatch.setattr(api._http_client._session, "close", lambda: closed.append(True))
+    with api._http_client:
+        pass
+    assert closed == [True]
