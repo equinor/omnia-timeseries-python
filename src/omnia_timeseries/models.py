@@ -1,6 +1,16 @@
 from typing import List, Optional, TypedDict, Dict, Any, Literal
 from requests.models import Response
 import json
+import math
+
+
+def _parse_retry_after(value: Optional[str]) -> Optional[float]:
+    """Parse a numeric Retry-After header; HTTP-date values are unsupported."""
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError):
+        return None
+    return max(seconds, 0.0) if math.isfinite(seconds) else None
 
 
 class MessageModel(TypedDict):
@@ -266,6 +276,7 @@ class TimeseriesRequestFailedException(Exception):
         self._reason = response.reason
         self._message = error["message"]
         self._trace_id = error["traceId"] if "traceId" in error else None
+        self._retry_after = _parse_retry_after(response.headers.get("Retry-After"))
         super().__init__(
             f"Status code: {self._status_code}, Reason: {self._reason}, Message: {self._message},  Trace ID: {self._trace_id}"
         )
@@ -285,3 +296,7 @@ class TimeseriesRequestFailedException(Exception):
     @property
     def trace_id(self) -> Optional[str]:
         return self._trace_id
+
+    @property
+    def retry_after(self) -> Optional[float]:
+        return self._retry_after

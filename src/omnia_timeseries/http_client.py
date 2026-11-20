@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Dict, Any, Mapping, Sequence
+from typing import Literal, Optional, Tuple, Dict, Any, Mapping, Sequence
 from azure.core.credentials import TokenCredential
 import requests
 import logging
@@ -14,6 +14,9 @@ ContentType = Literal[
 ]
 
 RequestType = Literal["get", "put", "post", "patch", "delete"]
+
+# (connect, read) seconds, so stalled requests fail and can be retried.
+DEFAULT_TIMEOUT = (10.0, 120.0)
 
 logger = logging.getLogger(__name__)
 version = metadata.version("omnia_timeseries")
@@ -33,10 +36,16 @@ def _request(
     headers: Dict[str, Any],
     payload: Optional[Mapping[str, Any] | Sequence[Any]] = None,
     params: Optional[Mapping[str, Any]] = None,
+    timeout: Optional[float | Tuple[float, float]] = None,
 ) -> Dict[str, Any] | bytes:
 
     response = requests.request(
-        request_type, url, headers=headers, json=payload, params=params
+        request_type,
+        url,
+        headers=headers,
+        json=payload,
+        params=params,
+        timeout=timeout,
     )
     if not response.ok:
         raise TimeseriesRequestFailedException(response)
@@ -47,9 +56,15 @@ def _request(
 
 
 class HttpClient:
-    def __init__(self, azure_credential: TokenCredential, resource_id: str):
+    def __init__(
+        self,
+        azure_credential: TokenCredential,
+        resource_id: str,
+        timeout: Optional[float | Tuple[float, float]] = DEFAULT_TIMEOUT,
+    ):
         self._azure_credential = azure_credential
         self._resource_id = resource_id
+        self._timeout = timeout
 
     def request(
         self,
@@ -75,4 +90,5 @@ class HttpClient:
             headers=headers,
             payload=payload,
             params=params,
+            timeout=self._timeout,
         )
